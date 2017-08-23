@@ -1,0 +1,4 @@
+{
+	"plugins" : ["xogroup"],
+	"extends" : ["plugin:xogroup/hapijs"]
+}
