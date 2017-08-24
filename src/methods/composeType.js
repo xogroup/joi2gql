@@ -9,7 +9,10 @@ const {
 } = require('../helpers');
 
 module.exports = (typeConstructor) => {
-    let name;
+    /*
+        TODO: Recursive types, nested objects.
+    */ 
+    let name = 'Anon';
     const description = typeConstructor.schema.describe();
 
     if (!(description.type === 'object')) {
