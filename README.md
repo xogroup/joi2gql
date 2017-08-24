@@ -1,11 +1,11 @@
-#felicity-ql
+#xo-joiql
 Description of this hapi plugin
 
 ## Download
 
 #### How to install this Plugin
 ```Text
-npm install --save felicity-ql
+npm install --save xo-joiql
 ```
 
 ## Usage

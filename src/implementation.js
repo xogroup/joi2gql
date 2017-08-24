@@ -1,24 +1,19 @@
 'use strict';
 
-const singleton = require('nc-singleton');
-const Hoek      = require('hoek');
+const Constructor = require('./constructor');
+const Hoek = require('hoek');
 
 const defaultOptions = {
-    msg: 'hey'
+    name: 'xo-joiql'
 };
 
-const Plugin = function Plugin() {
-    this.options = defaultOptions;
-
-    return singleton.call(this, Plugin);
-};
-
-Hoek.merge(Plugin.prototype, {
-    config: require('./methods/config'),
-    sayHey: require('./methods/say-hey')
+Hoek.merge(Constructor.prototype, {
+    options: defaultOptions,
+    config : require('./methods/config'),
+    compose: require('./methods/compose')
 });
 
 /**
  * Export the Instance to the World
  */
-module.exports = Plugin;
+module.exports = Constructor;
