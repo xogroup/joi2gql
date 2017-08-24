@@ -1,22 +1,35 @@
 'use strict';
 
+
+const Lab = require('lab');
+const { script, assertions } = Lab;
+const lab = exports.lab = script();
+const { describe, it } = lab;
+assertions.should();
+
+const Human = require('./mocks/document');
+const { GraphQLObjectType } = require('graphql');
+
 const CoreModule = require('../src/implementation');
-const options = require('./mocks/options');
 let instance;
 
 describe('INSTANCE ', function() {
-    before(function(done) {
-        instance = new CoreModule();
-        instance.config(options);
+    instance = new CoreModule();
+
+    it('should properly configure options', (done) => {
+        instance.config({ author: 'Samuel Joli' });
+
+        instance.options.should.deep.equal({
+            name  : 'felicity-ql',
+            author: 'Samuel Joli'
+        });
+
         done();
     });
 
-    it('should response with sum == 5 and msg == `hey`', function() {
-        return instance
-            .sayHey(1, 4)
-            .then(function(result) {
-                result.sum.should.be.equal(5);
-                result.msg.should.be.equal('hey');
-            });
+    it('should create GraphQL data type given a felicity constructor', (done) => {
+        instance.compose(Human)
+        .constructor.should.equal(GraphQLObjectType);
+        done();
     });
 });
