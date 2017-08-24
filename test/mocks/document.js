@@ -10,8 +10,6 @@ const schema = Joi.object().keys({
         title: Joi.string(),
         level: Joi.string()
     })
-}).meta({
-    name: 'Human'
 });
 
 module.exports = Felicity.entityFor(schema);

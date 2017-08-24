@@ -29,7 +29,11 @@ describe('INSTANCE ', () => {
 
     describe('.composeType()', () => {
         it('should create GraphQL data type given a felicity constructor', (done) => {
-            instance.composeType(Human)
+            const config = {
+                name: 'Human'
+            };
+
+            instance.composeType(Human, config)
                 .constructor.should.equal(GraphQLObjectType);
             done();
         });
@@ -37,9 +41,10 @@ describe('INSTANCE ', () => {
         it('should error when constructor is not an object', (done) => {
             const falseConstructor = {
                 schema: {
-                    describe: function() {
+                    meta: function() {
                         return {
-                            type: 'string'
+                            _type: 'string',
+                            _meta: []
                         };
                     }
                 }
@@ -54,10 +59,13 @@ describe('INSTANCE ', () => {
         it('if constructor does not have a meta name, it assigns Anon', (done) => {
             const falseConstructor = {
                 schema: {
-                    describe: function() {
+                    meta: function() {
                         return {
-                            type: 'object',
-                            meta: [{ key: 'value'}]
+                            _type : 'object',
+                            _meta : [{ key: 'value' }],
+                            _inner: {
+                                children: {}
+                            }
                         };
                     }
                 }
