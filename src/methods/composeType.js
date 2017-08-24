@@ -8,18 +8,18 @@ const {
     descToFields
 } = require('../helpers');
 
-module.exports = (typeConstructor) => {
+module.exports = (constructor, config) => {
     /*
         TODO: Recursive types, nested objects.
-    */ 
+    */
+    const typeConstructor = constructor.schema.meta(config);
     let name = 'Anon';
-    const description = typeConstructor.schema.describe();
 
-    if (!(description.type === 'object')) {
+    if (!(typeConstructor._type === 'object')) {
         throw new Error('Type needs to be an object');
     }
 
-    description.meta.forEach(function(item) { //TODO: Add meta to xodatahub
+    typeConstructor._meta.forEach(function(item) {
         if (item.name) {
             name = item.name;
         }
@@ -27,6 +27,6 @@ module.exports = (typeConstructor) => {
 
     return new GraphQLObjectType({
         name,
-        fields: descToFields(description) //TODO: should helper also create name?
+        fields: descToFields(typeConstructor) //TODO: should helper also create name?
     });
 };
