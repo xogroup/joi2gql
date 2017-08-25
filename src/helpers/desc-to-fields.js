@@ -34,8 +34,22 @@ const buildObject = (fields) => {
     return attrs;
 };
 
-module.exports = (constructor) => {
-    const fields = constructor._inner.children;
+const buildArgs = (args) => {
+    let argAttrs = {};
 
-    return buildObject(fields);
+    for (let key in args ) {
+        argAttrs[key] = { type: typeDictionary[args[key]._type] };
+    }
+
+    return argAttrs;
+};
+
+module.exports = (constructor) => {
+    const { name, args } = constructor._meta[0]; //TODO: Do I want to change this name on meta??
+
+    const fields = buildObject(constructor._inner.children);
+
+    const args2 = buildArgs(args);
+
+    return { name, fields, args: args2 };
 };

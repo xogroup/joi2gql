@@ -8,9 +8,10 @@ const defaultOptions = {
 };
 
 Hoek.merge(Constructor.prototype, {
-    options    : defaultOptions,
-    config     : require('./methods/config'),
-    composeType: require('./methods/composeType')
+    options      : defaultOptions,
+    config       : require('./methods/config'),
+    composeType  : require('./methods/composeType'),
+    composeSchema: require('./methods/composeSchema')
 });
 
 /**
