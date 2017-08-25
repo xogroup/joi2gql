@@ -2,13 +2,15 @@
 
 
 const Lab = require('lab');
-const { script, assertions, expect } = Lab;
+const { script, assertions } = Lab;
 const lab = exports.lab = script();
 const { describe, it } = lab;
 assertions.should();
 
 const Human = require('./mocks/document');
 const { GraphQLObjectType } = require('graphql');
+const { typeDictionary } = require('../src/helpers');
+const Joi = require('joi');
 
 const CoreModule = require('../src/implementation');
 let instance;
@@ -28,13 +30,27 @@ describe('INSTANCE ', () => {
     });
 
     describe('.composeType()', () => {
-        it('should create GraphQL data type given a felicity constructor', (done) => {
+        it('should create a GraphQL data type given a felicity constructor', (done) => {
             const config = {
                 name: 'Human'
             };
 
             instance.composeType(Human, config)
                 .constructor.should.equal(GraphQLObjectType);
+            done();
+        });
+
+        it('should create a GraphQL data type and correctly set the args', (done) => {
+            const config = {
+                name: 'Human',
+                args: { id: Joi.number() }
+            };
+
+            const expected = {
+                type: typeDictionary.number
+            };
+
+            instance.composeType(Human, config)._typeConfig.args.id.should.deep.equal(expected);
             done();
         });
 
@@ -50,19 +66,17 @@ describe('INSTANCE ', () => {
                 }
             };
 
-            expect(() => { //TODO: Use chain syntax
-                instance.composeType(falseConstructor);
-            }).to.throw('Type needs to be an object');
+            instance.composeType.bind(null, falseConstructor).should.throw('Type needs to be an object');
             done();
         });
 
-        it('if constructor does not have a meta name, it assigns Anon', (done) => {
+        it('should assign name to Anon if one was not given', (done) => {
             const falseConstructor = {
                 schema: {
-                    meta: function() {
+                    meta: function(config) {
                         return {
                             _type : 'object',
-                            _meta : [{ key: 'value' }],
+                            _meta : [config],
                             _inner: {
                                 children: {}
                             }
