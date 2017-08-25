@@ -16,7 +16,5 @@ module.exports = (constructor, config) => {
         throw new Error('Type needs to be an object');
     }
 
-    return new GraphQLObjectType(
-        descToFields(typeConstructor)
-    );
+    return new GraphQLObjectType( descToFields(typeConstructor) );
 };

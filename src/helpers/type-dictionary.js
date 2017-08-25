@@ -19,3 +19,4 @@ module.exports = {
     boolean: GraphQLBoolean,
     nonNull: GraphQLNonNull //TODO: This needs to be verified
 };
+
