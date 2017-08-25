@@ -1,6 +1,5 @@
 'use strict';
 
-
 const Lab = require('lab');
 const { script, assertions } = Lab;
 const lab = exports.lab = script();
@@ -15,7 +14,7 @@ const Joi = require('joi');
 const CoreModule = require('../src/implementation');
 let instance;
 
-describe('INSTANCE ', () => {
+describe('UNIT', () => {
     instance = new CoreModule();
 
     it('should properly configure options', (done) => {

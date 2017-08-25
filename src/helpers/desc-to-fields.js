@@ -25,7 +25,7 @@ const buildObject = (fields) => {
         }
 
         if (cache[fields[i].key]) {
-            continue;
+            continue; //TODO: May want to just return the cache, look into tradeoffs
         }
 
         attrs[fields[i].key] = { type: typeDictionary[fields[i].schema._type] };
@@ -45,11 +45,12 @@ const buildArgs = (args) => {
 };
 
 module.exports = (constructor) => {
-    const { name, args } = constructor._meta[0]; //TODO: Do I want to change this name on meta??
+    const { name, args, resolve } = constructor._meta[0]; //TODO: Do I want to change this name on meta??
 
-    const fields = buildObject(constructor._inner.children);
-
-    const args2 = buildArgs(args);
-
-    return { name, fields, args: args2 };
+    return {
+        name,
+        fields: buildObject(constructor._inner.children),
+        args  : buildArgs(args),
+        resolve
+    };
 };

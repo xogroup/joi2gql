@@ -14,7 +14,4 @@ Hoek.merge(Constructor.prototype, {
     composeSchema: require('./methods/composeSchema')
 });
 
-/**
- * Export the Instance to the World
- */
 module.exports = Constructor;
