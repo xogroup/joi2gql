@@ -42,7 +42,7 @@ describe('UNIT', () => {
         it('should create a GraphQL data type and correctly set the args', (done) => {
             const config = {
                 name: 'Human',
-                args: { id: Joi.number() }
+                args: { id: Joi.number().integer() }
             };
 
             const expected = {

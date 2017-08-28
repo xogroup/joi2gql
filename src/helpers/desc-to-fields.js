@@ -4,6 +4,15 @@ const typeDictionary = require('./type-dictionary');
 const { GraphQLObjectType } = require('graphql');
 
 const cache = {};
+//const internals = {}; //TODO: move cache? Return to this idea after v1, I'll have a better idea of what will be shareable and internal
+
+const setType = (schema) => { //Right now checking for whether or not type should be an int or float
+    if (schema._tests.length) {
+        return { type: typeDictionary[schema._tests[0].name] };
+    }
+
+    return { type: typeDictionary[schema._type] };
+};
 
 const buildObject = (fields) => {
     let attrs = {};
@@ -28,7 +37,7 @@ const buildObject = (fields) => {
             continue; //TODO: May want to just return the cache, look into tradeoffs
         }
 
-        attrs[fields[i].key] = { type: typeDictionary[fields[i].schema._type] };
+        attrs[fields[i].key] = setType(fields[i].schema);
     }
 
     return attrs;
