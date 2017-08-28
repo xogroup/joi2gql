@@ -9,7 +9,9 @@ const schema = Joi.object().keys({
     occupation: Joi.object().keys({
         title: Joi.string(),
         level: Joi.string()
-    })
+    }),
+    active      : Joi.boolean(),
+    affiliations: Joi.array().items(Joi.string())
 });
 
 module.exports = Felicity.entityFor(schema);
