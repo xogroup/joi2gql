@@ -15,7 +15,7 @@ module.exports = {
     string : GraphQLString,
     integer: GraphQLInt,
     number : GraphQLFloat,
-    list   : GraphQLList,
+    array  : GraphQLList,
     boolean: GraphQLBoolean,
     nonNull: GraphQLNonNull //TODO: This needs to be verified
 };

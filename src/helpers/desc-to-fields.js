@@ -1,7 +1,7 @@
 'use strict';
 
 const typeDictionary = require('./type-dictionary');
-const { GraphQLObjectType } = require('graphql');
+const { GraphQLObjectType, GraphQLList } = require('graphql');
 
 const cache = {};
 //const internals = {}; //TODO: move cache? Return to this idea after v1, I'll have a better idea of what will be shareable and internal
@@ -25,6 +25,16 @@ const buildObject = (fields) => {
                 name  : key.charAt(0).toUpperCase() + key.slice(1), //TODO: Is it worth bringing in lodash
                 fields: buildObject(fields[i].schema._inner.children)
             });
+
+            attrs[fields[i].key] = {
+                type: Type
+            };
+
+            cache[fields[i].key] = Type;
+        }
+
+        if (fields[i].schema._type === 'array') {
+            let Type = new GraphQLList(typeDictionary[fields[i].schema._inner.items[0]._type]);
 
             attrs[fields[i].key] = {
                 type: Type
