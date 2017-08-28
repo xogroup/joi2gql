@@ -13,8 +13,8 @@ const {
 module.exports = {
     object : GraphQLObjectType,
     string : GraphQLString,
-    number : GraphQLInt,
-    float  : GraphQLFloat,
+    integer: GraphQLInt,
+    number : GraphQLFloat,
     list   : GraphQLList,
     boolean: GraphQLBoolean,
     nonNull: GraphQLNonNull //TODO: This needs to be verified
