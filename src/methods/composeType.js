@@ -1,5 +1,7 @@
 'use strict';
 
+const Hoek = require('hoek');
+
 const {
     GraphQLObjectType
 } = require('graphql');
@@ -12,9 +14,7 @@ module.exports = (constructor, config) => {
     config = config || { name: 'Anon' };
     const typeConstructor = constructor.schema.meta(config);
 
-    if (!(typeConstructor._type === 'object')) {
-        throw new Error('Type needs to be an object');
-    }
+    Hoek.assert((typeConstructor._type === 'object'), 'Type needs to be an object');
 
     return new GraphQLObjectType( descToFields(typeConstructor) );
 };
