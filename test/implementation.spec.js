@@ -6,8 +6,8 @@ const lab = exports.lab = script();
 const { describe, it } = lab;
 assertions.should();
 
-const Human = require('./mocks/document');
-const { GraphQLObjectType } = require('graphql');
+const Document = require('./mocks/document');
+const { GraphQLObjectType, GraphQLSchema } = require('graphql');
 const { typeDictionary } = require('../src/helpers');
 const Joi = require('joi');
 
@@ -34,7 +34,7 @@ describe('UNIT', () => {
                 name: 'Human'
             };
 
-            instance.composeType(Human, config)
+            instance.composeType(Document, config)
                 .constructor.should.equal(GraphQLObjectType);
             done();
         });
@@ -49,7 +49,7 @@ describe('UNIT', () => {
                 type: typeDictionary.number
             };
 
-            instance.composeType(Human, config)._typeConfig.args.id.should.deep.equal(expected);
+            instance.composeType(Document, config)._typeConfig.args.id.should.deep.equal(expected);
             done();
         });
 
@@ -85,6 +85,35 @@ describe('UNIT', () => {
             };
 
             instance.composeType(falseConstructor).name.should.equal('Anon');
+            done();
+        });
+    });
+
+    describe('.composeSchema()', () => {
+        it('successfully create a graphql schema', (done) => {
+            const config = { name: 'Human' };
+            const Human = instance.composeType(Document, config);
+            const schema = {
+                query: {
+                    human: Human
+                }
+            };
+
+            instance.composeSchema( schema ).constructor.should.equal( GraphQLSchema );
+            done();
+        });
+
+        it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {
+            const config = { name: 'Alien' };
+            const Saiyan = instance.composeType(Document, config);
+            const schema = {
+                query: {
+                    human: Saiyan,
+                    hello: Joi.string().meta({ resolve: () => 'world' })
+                }
+            };
+
+            instance.composeSchema( schema ).constructor.should.equal( GraphQLSchema );
             done();
         });
     });

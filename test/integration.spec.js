@@ -20,10 +20,10 @@ const humans = {
 describe('INTEGRATION', () => {
     instance = new CoreModule();
 
-    it('should execute a graphql query', () => {
+    it('should execute a graphql query given a GraphQL data type', () => {
         const config = {
             name   : 'Human',
-            args   : { id: Joi.number() }, //TODO: The args need to be defined at the query level otherwise this data will exist both on data type and query type with current implementation
+            args   : { id: Joi.number() },
             resolve: function(root, args) {
                 return {
                     name: humans[args.id]
@@ -43,6 +43,19 @@ describe('INTEGRATION', () => {
 
         return graphql( graphqlSchema, query ).then((res) => {
             res.data.human.name.should.equal('Samuel Joli');
+        });
+    });
+
+    it('should execute a graphql query given a Joi schema', () => {
+        const graphqlSchema = instance.composeSchema({
+            query: {
+                hello: Joi.string().meta({ resolve: () => 'world' })
+            }
+        });
+        const query = '{ hello }';
+
+        return graphql( graphqlSchema, query ).then((res) => {
+            res.data.hello.should.equal('world');
         });
     });
 });
