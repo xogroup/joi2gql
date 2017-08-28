@@ -20,6 +20,7 @@ const humans = {
     2: {
         name      : 'Motoko Kusanagi',
         age       : 31,
+        cyborgMods: 90.9,
         occupation: {
             title: 'Military Officer',
             level: 'Major'
@@ -89,6 +90,7 @@ describe('INTEGRATION', () => {
                 cyborg(id: 2) { 
                     name
                     age
+                    cyborgMods
                     occupation { 
                         title
                         level 
@@ -100,15 +102,18 @@ describe('INTEGRATION', () => {
         `;
 
         return graphql( graphqlSchema, query ).then((response) => {
+            //TODO: Either a graphql or Chai should bug, but can't properly use
+            //should on objects past the response key
             console.log(response);
             const result = response.data.cyborg;
 
-            result.name.should.equal('Motoko Kusanagi');
-            result.age.should.equal(31);
-            result.occupation.title.should.equal('Military Officer');
+            result.name.should.equal('Motoko Kusanagi'); //String
+            result.age.should.equal(31); //Int
+            result.cyborgMods.should.equal(90.9); //Float
+            result.occupation.title.should.equal('Military Officer'); //Object
             result.occupation.level.should.equal('Major');
             result.active.should.equal(true);
-            result.affiliations.should.deep.equal(['Section 9']);
+            result.affiliations.should.deep.equal(['Section 9']); //List
         });
     });
 });
