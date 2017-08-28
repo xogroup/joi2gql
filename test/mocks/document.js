@@ -6,6 +6,7 @@ const Felicity = require('felicity');
 const schema = Joi.object().keys({
     name      : Joi.string(),
     age       : Joi.number().integer(),
+    cyborgMods: Joi.number(),
     occupation: Joi.object().keys({
         title: Joi.string(),
         level: Joi.string()
