@@ -9,6 +9,7 @@ assertions.should();
 const Document = require('./mocks/document');
 const { graphql } = require('graphql');
 const Joi = require('joi');
+const Felicity = require('felicity');
 
 const CoreModule = require('../src/implementation');
 let instance;
@@ -71,6 +72,22 @@ describe('INTEGRATION', () => {
     });
 
     it('should exec', () => {
+
+        const Joischema = Joi.object().keys({
+            name      : Joi.string(),
+            age       : Joi.number().integer(),
+            cyborgMods: Joi.number(),
+            occupation: Joi.object().keys({
+                title: Joi.string(),
+                level: Joi.string()
+            }),
+            active      : Joi.boolean(),
+            affiliations: Joi.array().items(Joi.string()),
+            //teamMembers: Joi.array().items(Joi.lazy(() => schema).description('document schema'))
+        });
+
+        const FelicityConstructor = Felicity.entityFor(Joischema);
+
         const config = {
             name   : 'Cyborg',
             args   : { id: Joi.number().integer() },
@@ -78,7 +95,7 @@ describe('INTEGRATION', () => {
                 return humans[args.id];
             }
         };
-        const Cyborg = instance.composeType(Document, config);
+        const Cyborg = instance.composeType(FelicityConstructor, config);
         const schema = {
             query: {
                 cyborg: Cyborg

@@ -10,6 +10,7 @@ const Document = require('./mocks/document');
 const { GraphQLObjectType, GraphQLSchema } = require('graphql');
 const { typeDictionary } = require('../src/helpers');
 const Joi = require('joi');
+const Felicity = require('felicity');
 
 const CoreModule = require('../src/implementation');
 let instance;
@@ -85,6 +86,33 @@ describe('UNIT', () => {
             };
 
             instance.composeType(falseConstructor).name.should.equal('Anon');
+            done();
+        });
+
+        it('should properly construct a graphql data type given a felicity constructor that references itself', (done) => {
+            const Joischema = Joi.object().keys({
+                name      : Joi.string(),
+                age       : Joi.number().integer(),
+                cyborgMods: Joi.number(),
+                occupation: Joi.object().keys({
+                    title: Joi.string(),
+                    level: Joi.string()
+                }),
+                active      : Joi.boolean(),
+                teamMembers: Joi.array().items(Joi.lazy(() => Joischema).description('Cyborg'))
+            });
+
+            const FelicityConstructor = Felicity.entityFor(Joischema);
+
+            const config = {
+                name: 'Cyborg',
+                args: { id: Joi.number().integer() },
+                resolve: function(){}
+            };
+
+            instance.composeType(FelicityConstructor, config)
+                .constructor.should.equal( GraphQLObjectType );
+
             done();
         });
     });
