@@ -89,7 +89,7 @@ describe('UNIT', () => {
             done();
         });
 
-        it('should properly construct a graphql data type given a felicity constructor that references itself', (done) => {
+        it('should properly construct a graphql data type given a felicity constructor that references itself', (done) => { //TODO: Update Api.MD for this use case
             const Joischema = Joi.object().keys({
                 name      : Joi.string(),
                 age       : Joi.number().integer(),
@@ -98,16 +98,16 @@ describe('UNIT', () => {
                     title: Joi.string(),
                     level: Joi.string()
                 }),
-                active      : Joi.boolean(),
-                teamMembers: Joi.array().items(Joi.lazy(() => Joischema).description('Cyborg'))
+                active     : Joi.boolean(),
+                teamMembers: Joi.array().items(Joi.lazy(() => Joischema).description('Cyborg')) // May not need users to specify
             });
 
             const FelicityConstructor = Felicity.entityFor(Joischema);
 
             const config = {
-                name: 'Cyborg',
-                args: { id: Joi.number().integer() },
-                resolve: function(){}
+                name   : 'Cyborg',
+                args   : { id: Joi.number().integer() },
+                resolve: function() {}
             };
 
             instance.composeType(FelicityConstructor, config)
