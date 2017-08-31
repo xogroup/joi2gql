@@ -1,23 +1,62 @@
 'use strict';
 
+const {
+    GraphQLObjectType,
+    GraphQLList
+} = require('graphql');
 const typeDictionary = require('./type-dictionary');
-const { GraphQLObjectType, GraphQLList } = require('graphql');
-const Hoek = require('hoek');
+const Hoek           = require('hoek');
+const internals      = {};
+const cache          = {};
+let recurse          = false;
+let lazyLoadQueue    = [];
 
-const cache = {};
-let recurse = false;
-let needRecursion = [];
-//const internals = {}; //TODO: move cache? Return to this idea after v1, I'll have a better idea of what will be shareable and internal
+module.exports = (constructor) => {
+    let target;
+    let compiledFields;
+    const { name, args, resolve } = constructor._meta[0];
 
-const setType = (schema) => { //Right now checking for whether or not type should be an int or float
+    compiledFields = internals.buildObject(constructor._inner.children);
+
+    if (recurse) {
+        target = new GraphQLObjectType({
+            name,
+            fields: function() {
+                return compiledFields(target);
+            },
+            args: internals.buildArgs(args),
+            resolve
+        });
+    } else {
+        target = new GraphQLObjectType({
+            name,
+            fields: compiledFields(),
+            args  : internals.buildArgs(args),
+            resolve
+        });
+    }
+
+    //console.log(target._typeConfig.fields());
+    return target;
+};
+
+internals.setType = (schema) => { // Helpful for Int or Float
     if (schema._tests.length) {
         return { type: typeDictionary[schema._tests[0].name] };
     }
-    
+
     return { type: typeDictionary[schema._type] };
 };
 
-const buildObject = (fields, type) => {
+internals.processLazyLoadQueue = (attrs, recursiveType) => {
+    for (let i = 0, len = lazyLoadQueue.length; i < len; i++) {
+        attrs[lazyLoadQueue[i].key] = { type: new typeDictionary[lazyLoadQueue[i].type](recursiveType) };
+    }
+
+    return attrs;
+};
+
+internals.buildObject = (fields) => {
     let attrs = {};
 
     for (let i = 0, len = fields.length; i < len; i++) {
@@ -26,7 +65,7 @@ const buildObject = (fields, type) => {
 
             let Type = new GraphQLObjectType({
                 name  : key.charAt(0).toUpperCase() + key.slice(1), //TODO: Is it worth bringing in lodash
-                fields: buildObject(fields[i].schema._inner.children)
+                fields: internals.buildObject(fields[i].schema._inner.children)
             });
 
             attrs[fields[i].key] = {
@@ -41,19 +80,17 @@ const buildObject = (fields, type) => {
             let chain = 'schema._inner.items.0._flags.lazy';
 
             if (Hoek.reach(fields[i], chain)) {
-                //TODO: This all needs to be refactored to something that is
-                //more readable and performant. 
-                recurse = true;
-                Type = true;
-                needRecursion.push({
-                    key: fields[i].key,
-                    type: 'array'
-                })
-                //console.log(fields[i].schema._inner.items[0]._description);
+                recurse = true; //Indicates that this a type that needs to be lazy loaded
+                Type = fields[i].schema._inner.items[0]._description;
+
+                lazyLoadQueue.push({
+                    key : fields[i].key,
+                    type: fields[i].schema._type
+                });
             } else {
                 Type = new GraphQLList(typeDictionary[fields[i].schema._inner.items[0]._type]);
             }
-            
+
             attrs[fields[i].key] = {
                 type: Type
             };
@@ -65,27 +102,20 @@ const buildObject = (fields, type) => {
             continue; //TODO: May want to just return the cache, look into tradeoffs
         }
 
-        attrs[fields[i].key] = setType(fields[i].schema);
+        attrs[fields[i].key] = internals.setType(fields[i].schema);
     }
 
-    const resolveCursion = (attrs, thing) => { //TODO: needs to be refactored elsewhere
-        for (let i = 0, len = needRecursion.length; i < len; i++) {
-            attrs[needRecursion[i].key] = { type: new GraphQLList(thing) }; //TODO: Need to check for whether or not it is an object or list
-        }
-        return attrs;
-    }
 
-    return function(thing) { //TODO: The core idea here is return a function always, and check for the prescence of a defined gql schema, if so resolve, which that func will check for an array needRecursion, which will be populated above when a reference of ._lazy is found.
-        if (thing) {
-            return resolveCursion(attrs, thing);
+    return function(recursiveType) {
+        if (recursiveType) {
+            return internals.processLazyLoadQueue(attrs, recursiveType);
         }
+
         return attrs;
-    }
-    
-    //return attrs;
+    };
 };
 
-const buildArgs = (args) => {
+internals.buildArgs = (args) => {
     let argAttrs = {};
 
     for (let key in args ) {
@@ -95,44 +125,3 @@ const buildArgs = (args) => {
     return argAttrs;
 };
 
-module.exports = (constructor) => {
-    let target;
-    let fields;
-    let compiledFields;
-    const { name, args, resolve } = constructor._meta[0];
-    
-    compiledFields = buildObject(constructor._inner.children);
-
-    if (recurse) {
-        target = new GraphQLObjectType({
-            name,
-            fields: function() {
-                return compiledFields(target);
-            },
-            args: buildArgs(args),
-            resolve
-        });
-    } else {
-        target = new GraphQLObjectType({
-            name,
-            fields: compiledFields(true),
-            args: buildArgs(args),
-            resolve
-        });
-    }
-
-    //console.log(target._typeConfig.fields()); //TODO: Use this to verify lazy
-    //loaded schemas
-
-    return target;
-
-};
-
-/* 
-    const returnedType = new GraphQLObject({
-        name,
-        fields: build(returnedType, args),
-        args: buildArgs,
-        resolve
-    })
-*/

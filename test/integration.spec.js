@@ -72,7 +72,6 @@ describe('INTEGRATION', () => {
     });
 
     it('should exec', () => {
-
         const Joischema = Joi.object().keys({
             name      : Joi.string(),
             age       : Joi.number().integer(),
@@ -82,7 +81,7 @@ describe('INTEGRATION', () => {
                 level: Joi.string()
             }),
             active      : Joi.boolean(),
-            affiliations: Joi.array().items(Joi.string()),
+            affiliations: Joi.array().items(Joi.string())
             //teamMembers: Joi.array().items(Joi.lazy(() => schema).description('document schema'))
         });
 
@@ -121,7 +120,6 @@ describe('INTEGRATION', () => {
         return graphql( graphqlSchema, query ).then((response) => {
             //TODO: Either a graphql or Chai should bug, but can't properly use
             //should on objects past the response key
-            console.log(response);
             const result = response.data.cyborg;
 
             result.name.should.equal('Motoko Kusanagi'); //String
