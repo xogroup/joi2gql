@@ -4,6 +4,7 @@ const {
     GraphQLObjectType,
     GraphQLSchema
 } = require('graphql');
+const Hoek = require('hoek');
 
 const { typeDictionary } = require('../helpers');
 
@@ -29,6 +30,8 @@ const buildFields = (obj) => {
 };
 
 module.exports = (schema) => {
+    Hoek.assert((schema !== undefined), 'Must provide a schema');
+
     const attrs = {};
 
     if (schema.query) {
