@@ -6,11 +6,17 @@ const lab = exports.lab = script();
 const { describe, it } = lab;
 assertions.should();
 
-const { GraphQLObjectType, GraphQLSchema } = require('graphql');
-const { typeDictionary } = require('../src/helpers');
-const Joi = require('joi');
+const {
+    GraphQLObjectType,
+    GraphQLSchema
+} = require('graphql');
+const {
+    typeDictionary
+} = require('../src/helpers');
+const Joi      = require('joi');
 const Felicity = require('felicity');
 
+const internals  = {};
 const CoreModule = require('../src/implementation');
 let instance;
 
@@ -34,22 +40,6 @@ All tests should not share mutable state.
 */
 
 describe('UNIT', () => {
-    const buildJoiSchema = () => {
-        const schema = Joi.object().keys({
-            name      : Joi.string(),
-            age       : Joi.number().integer(),
-            cyborgMods: Joi.number(),
-            occupation: Joi.object().keys({
-                title: Joi.string(),
-                level: Joi.string()
-            }),
-            active      : Joi.boolean(),
-            affiliations: Joi.array().items(Joi.string())
-        });
-
-        return Felicity.entityFor(schema);
-    };
-
     instance = new CoreModule();
 
     it('should properly configure options', (done) => {
@@ -69,7 +59,7 @@ describe('UNIT', () => {
                 name: 'Human'
             };
 
-            instance.composeType(buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
+            instance.composeType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
             done();
         });
 
@@ -83,8 +73,8 @@ describe('UNIT', () => {
                 type: typeDictionary.number
             };
 
-            instance.composeType(buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
-            instance.composeType(buildJoiSchema(), config)._typeConfig.args.id.should.deep.equal(expected);
+            instance.composeType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
+            instance.composeType(internals.buildJoiSchema(), config)._typeConfig.args.id.should.deep.equal(expected);
             done();
         });
 
@@ -150,7 +140,7 @@ describe('UNIT', () => {
     describe('.composeSchema()', () => {
         it('successfully create a graphql schema', (done) => {
             const config = { name: 'Human' };
-            const Human = instance.composeType(buildJoiSchema(), config);
+            const Human = instance.composeType(internals.buildJoiSchema(), config);
             const schema = {
                 query: {
                     human: Human
@@ -163,7 +153,7 @@ describe('UNIT', () => {
 
         it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {
             const config = { name: 'Alien' };
-            const Saiyan = instance.composeType(buildJoiSchema(), config);
+            const Saiyan = instance.composeType(internals.buildJoiSchema(), config);
             const schema = {
                 query: {
                     human: Saiyan,
@@ -186,3 +176,20 @@ describe('UNIT', () => {
         });
     });
 });
+
+
+internals.buildJoiSchema = () => {
+    const schema = Joi.object().keys({
+        name      : Joi.string(),
+        age       : Joi.number().integer(),
+        cyborgMods: Joi.number(),
+        occupation: Joi.object().keys({
+            title: Joi.string(),
+            level: Joi.string()
+        }),
+        active      : Joi.boolean(),
+        affiliations: Joi.array().items(Joi.string())
+    });
+
+    return Felicity.entityFor(schema);
+};

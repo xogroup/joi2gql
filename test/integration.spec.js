@@ -14,6 +14,25 @@ const internals  = {};
 const CoreModule = require('../src/implementation');
 let instance;
 
+/*
+Red Green RefactorA
+Red: What is in a good failing test?
+1. What were you testing
+2. What should it do
+3. What was the actual output
+4. What was the expected output
+
+R.I.T.E.
+- Readable
+- Isolated or Integrated
+- Thorough
+- Explicit
+
+TODO: Keep the code in a unit test to a minimum
+Use factory functions for test setup and tear down
+All tests should not share mutable state.
+*/
+
 const database = {
     1: {
         name: 'Samuel Joli'
@@ -64,6 +83,7 @@ describe('INTEGRATION', () => {
     });
 
     it('should execute a graphql query given a complex joi schema', () => {
+        let schema; // Will be redefined in internals.buildJoiSchema
         const joiSchemaOverride = Joi.object().keys({
             teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg')) //TODO: Since schema is not defined, pull back in setup
         });
