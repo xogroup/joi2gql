@@ -5,10 +5,27 @@ const {
     GraphQLSchema
 } = require('graphql');
 const Hoek = require('hoek');
+const {
+    typeDictionary
+} = require('../helpers');
+const internals = {};
 
-const { typeDictionary } = require('../helpers');
+module.exports = (schema) => {
+    Hoek.assert((schema !== undefined), 'Must provide a schema');
 
-const buildFields = (obj) => {
+    const attrs = {};
+
+    if (schema.query) {
+        attrs.query = new GraphQLObjectType({
+            name  : 'Query',
+            fields: internals.buildFields(schema.query)
+        });
+    }
+
+    return new GraphQLSchema( attrs );
+};
+
+internals.buildFields = (obj) => {
     const attrs = {};
 
     for (let key in obj) {
@@ -27,19 +44,4 @@ const buildFields = (obj) => {
     }
 
     return attrs;
-};
-
-module.exports = (schema) => {
-    Hoek.assert((schema !== undefined), 'Must provide a schema');
-
-    const attrs = {};
-
-    if (schema.query) {
-        attrs.query = new GraphQLObjectType({
-            name  : 'Query',
-            fields: buildFields(schema.query)
-        });
-    }
-
-    return new GraphQLSchema( attrs );
 };
