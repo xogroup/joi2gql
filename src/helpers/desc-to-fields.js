@@ -8,7 +8,6 @@ const typeDictionary = require('./type-dictionary');
 const Hoek           = require('hoek');
 const internals      = {};
 const cache          = {};
-let recurse          = false;
 let lazyLoadQueue    = [];
 
 module.exports = (constructor) => {
@@ -18,7 +17,7 @@ module.exports = (constructor) => {
 
     compiledFields = internals.buildObject(constructor._inner.children);
 
-    if (recurse) {
+    if (lazyLoadQueue.length) {
         target = new GraphQLObjectType({
             name,
             fields: function() {
@@ -50,7 +49,11 @@ internals.setType = (schema) => { // Helpful for Int or Float
 
 internals.processLazyLoadQueue = (attrs, recursiveType) => {
     for (let i = 0, len = lazyLoadQueue.length; i < len; i++) {
-        attrs[lazyLoadQueue[i].key] = { type: new typeDictionary[lazyLoadQueue[i].type](recursiveType) };
+        if (lazyLoadQueue[i].type === 'object') {
+            attrs[lazyLoadQueue[i].key] = { type: recursiveType };
+        } else {
+            attrs[lazyLoadQueue[i].key] = { type: new typeDictionary[lazyLoadQueue[i].type](recursiveType) };
+        }
     }
 
     return attrs;
@@ -80,7 +83,6 @@ internals.buildObject = (fields) => {
             let chain = 'schema._inner.items.0._flags.lazy';
 
             if (Hoek.reach(fields[i], chain)) {
-                recurse = true; //Indicates that this a type that needs to be lazy loaded
                 Type = fields[i].schema._inner.items[0]._description;
 
                 lazyLoadQueue.push({
@@ -96,6 +98,23 @@ internals.buildObject = (fields) => {
             };
 
             cache[fields[i].key] = Type;
+        }
+
+        if (fields[i].schema._type === 'lazy') {
+            let key = fields[i].key;
+
+            let Type = fields[i].schema._description;
+
+            lazyLoadQueue.push({
+                key,
+                type: 'object' //TODO: Hardcoded assumption
+            });
+
+            attrs[key] = {
+                type: Type
+            };
+
+            cache[key] = Type;
         }
 
         if (cache[fields[i].key]) {

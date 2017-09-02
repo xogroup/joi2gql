@@ -58,9 +58,8 @@ const database = {
 };
 
 describe('INTEGRATION', () => {
-    instance = new CoreModule();
-
     it('should execute a graphql query given a GraphQL data type', () => {
+        instance = new CoreModule();
         const query = '{ cyborg(id: 1) { name } }';
         const graphqlSchema = instance.composeSchema( internals.buildQuerySchema() );
 
@@ -70,6 +69,7 @@ describe('INTEGRATION', () => {
     });
 
     it('should execute a graphql query given a Joi schema', () => {
+        instance = new CoreModule();
         const graphqlSchema = instance.composeSchema({
             query: {
                 hello: Joi.string().meta({ resolve: () => 'world' })
@@ -83,6 +83,7 @@ describe('INTEGRATION', () => {
     });
 
     it('should execute a graphql query given a complex joi schema', () => {
+        instance = new CoreModule();
         let schema; // Will be redefined in internals.buildJoiSchema
         const joiSchemaOverride = Joi.object().keys({
             teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg')) //TODO: Since schema is not defined, pull back in setup
