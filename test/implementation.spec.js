@@ -40,9 +40,8 @@ All tests should not share mutable state.
 */
 
 describe('UNIT', () => {
-    instance = new CoreModule();
-
     it('should properly configure options', (done) => {
+        instance = new CoreModule();
         instance.config({ author: 'Samuel Joli' });
 
         instance.options.should.deep.equal({
@@ -55,6 +54,7 @@ describe('UNIT', () => {
 
     describe('.composeType()', () => {
         it('should create a GraphQL data type given a felicity constructor', (done) => {
+            instance = new CoreModule();
             const config = {
                 name: 'Human'
             };
@@ -64,6 +64,7 @@ describe('UNIT', () => {
         });
 
         it('should create a GraphQL data type and correctly set the args', (done) => {
+            instance = new CoreModule();
             const config = {
                 name: 'Human',
                 args: { id: Joi.number().integer() }
@@ -79,6 +80,7 @@ describe('UNIT', () => {
         });
 
         it('should error when constructor is not an object', (done) => {
+            instance = new CoreModule();
             const falseConstructor = {
                 schema: {
                     meta: function() {
@@ -95,6 +97,7 @@ describe('UNIT', () => {
         });
 
         it('should assign name to Anon if one was not given', (done) => {
+            instance = new CoreModule();
             const falseConstructor = {
                 schema: {
                     meta: function(config) {
@@ -113,7 +116,28 @@ describe('UNIT', () => {
             done();
         });
 
-        it('should properly construct a graphql data type given a recursive felicity constructor', (done) => { //TODO: Update Api.MD for this use case
+        it('should construct graphql data type given a recurisve felicity constructor', (done) => {
+            const typeName = 'Subject';
+            const config = {
+                name: typeName
+            };
+            const joiSchema = Joi.object().keys({
+                prop1: Joi.string(),
+                prop2: Joi.number().integer(),
+                prop3: Joi.lazy(() => joiSchema).description(typeName)
+            });
+            const FelicityConstructor = Felicity.entityFor(joiSchema);
+
+            const subject = instance.composeType(FelicityConstructor, config);
+
+            (subject._typeConfig.fields instanceof Function).should.be.true;
+            subject._typeConfig.fields().prop3.type._typeConfig.name.should.equal(typeName);
+            subject.constructor.should.equal( GraphQLObjectType ); //TODO: Drawback of checking just for constructor
+            done();
+        });
+
+        it('should properly construct a graphql data type given a recursive felicity constructor nested in an array', (done) => { //TODO: Update Api.MD for this use case
+            instance = new CoreModule();
             const config = {
                 name   : 'Cyborg',
                 args   : { id: Joi.number().integer() },
@@ -139,6 +163,7 @@ describe('UNIT', () => {
 
     describe('.composeSchema()', () => {
         it('successfully create a graphql schema', (done) => {
+            instance = new CoreModule();
             const config = { name: 'Human' };
             const Human = instance.composeType(internals.buildJoiSchema(), config);
             const schema = {
@@ -152,6 +177,8 @@ describe('UNIT', () => {
         });
 
         it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {
+            instance = new CoreModule();
+            const subject = new CoreModule();
             const config = { name: 'Alien' };
             const Saiyan = instance.composeType(internals.buildJoiSchema(), config);
             const schema = {
@@ -161,16 +188,18 @@ describe('UNIT', () => {
                 }
             };
 
-            instance.composeSchema( schema ).constructor.should.equal( GraphQLSchema );
+            subject.composeSchema( schema ).constructor.should.equal( GraphQLSchema );
             done();
         });
 
         it('should throw when query, mutation, or subscription is not defined', (done) => {
+            instance = new CoreModule();
             instance.composeSchema.bind(null, {}).should.throw();
             done();
         });
 
         it('should throw an error when schema is not provided', (done) => {
+            instance = new CoreModule();
             instance.composeSchema.bind(null).should.throw('Must provide a schema');
             done();
         });
