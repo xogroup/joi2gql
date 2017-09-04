@@ -8,7 +8,6 @@ assertions.should();
 
 const { graphql } = require('graphql');
 const Joi         = require('joi');
-const Felicity    = require('felicity');
 
 const internals  = {};
 const CoreModule = require('../src/implementation');
@@ -142,7 +141,7 @@ internals.buildJoiSchema = (args) => {
         schema = schema.concat(args);
     }
 
-    return Felicity.entityFor(schema);
+    return schema;
 };
 
 internals.buildQuerySchema = (schemaOverride) => {
