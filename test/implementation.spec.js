@@ -14,7 +14,6 @@ const {
     typeDictionary
 } = require('../src/helpers');
 const Joi      = require('joi');
-const Felicity = require('felicity');
 
 const internals  = {};
 const CoreModule = require('../src/implementation');
@@ -53,7 +52,7 @@ describe('UNIT', () => {
     });
 
     describe('.composeType()', () => {
-        it('should create a GraphQL data type given a felicity constructor', (done) => {
+        it('should create a GraphQL data type given a joi schema', (done) => {
             instance = new CoreModule();
             const config = {
                 name: 'Human'
@@ -79,40 +78,22 @@ describe('UNIT', () => {
             done();
         });
 
-        it('should error when constructor is not an object', (done) => {
+        it('should error when joi schema is not an object', (done) => {
             instance = new CoreModule();
-            const falseConstructor = {
-                schema: {
-                    meta: function() {
-                        return {
-                            _type: 'string',
-                            _meta: []
-                        };
-                    }
-                }
-            };
+            const joiSchema = Joi.string();
 
-            instance.composeType.bind(null, falseConstructor).should.throw('Type needs to be an object');
+            instance.composeType.bind(null, joiSchema).should.throw('Type needs to be an object');
             done();
         });
 
         it('should assign name to Anon if one was not given', (done) => {
             instance = new CoreModule();
-            const falseConstructor = {
-                schema: {
-                    meta: function(config) {
-                        return {
-                            _type : 'object',
-                            _meta : [config],
-                            _inner: {
-                                children: {}
-                            }
-                        };
-                    }
-                }
-            };
+            const joiSchema = Joi.object().keys({
+                name: Joi.string(),
+                age : Joi.number().integer()
+            });
 
-            instance.composeType(falseConstructor).name.should.equal('Anon');
+            instance.composeType(joiSchema).name.should.equal('Anon');
             done();
         });
 
@@ -126,9 +107,8 @@ describe('UNIT', () => {
                 prop2: Joi.number().integer(),
                 prop3: Joi.lazy(() => joiSchema).description(typeName)
             });
-            const FelicityConstructor = Felicity.entityFor(joiSchema);
 
-            const subject = instance.composeType(FelicityConstructor, config);
+            const subject = instance.composeType(joiSchema, config);
 
             (subject._typeConfig.fields instanceof Function).should.be.true;
             subject._typeConfig.fields().prop3.type._typeConfig.name.should.equal(typeName);
@@ -143,7 +123,7 @@ describe('UNIT', () => {
                 args   : { id: Joi.number().integer() },
                 resolve: function() {}
             };
-            const Joischema = Joi.object().keys({
+            const joiSchema = Joi.object().keys({
                 name      : Joi.string(),
                 age       : Joi.number().integer(),
                 cyborgMods: Joi.number(),
@@ -152,11 +132,10 @@ describe('UNIT', () => {
                     level: Joi.string()
                 }),
                 active     : Joi.boolean(),
-                teamMembers: Joi.array().items(Joi.lazy(() => Joischema).description('Cyborg')) // May not need users to specify
+                teamMembers: Joi.array().items(Joi.lazy(() => joiSchema).description('Cyborg')) // May not need users to specify
             });
-            const FelicityConstructor = Felicity.entityFor(Joischema);
 
-            instance.composeType(FelicityConstructor, config).constructor.should.equal( GraphQLObjectType );
+            instance.composeType(joiSchema, config).constructor.should.equal( GraphQLObjectType );
             done();
         });
     });
@@ -220,5 +199,5 @@ internals.buildJoiSchema = () => {
         affiliations: Joi.array().items(Joi.string())
     });
 
-    return Felicity.entityFor(schema);
+    return schema;
 };

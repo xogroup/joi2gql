@@ -5,9 +5,9 @@ const {
     descToFields
 } = require('../helpers');
 
-module.exports = (constructor, config) => {
+module.exports = (schema, config) => {
     config = config || { name: 'Anon' };
-    const typeConstructor = constructor.schema.meta(config);
+    const typeConstructor = schema.meta(config);
 
     Hoek.assert((typeConstructor._type === 'object'), 'Type needs to be an object');
 
