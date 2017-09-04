@@ -8,12 +8,25 @@ assertions.should();
 
 const {
     GraphQLObjectType,
-    GraphQLSchema
+    GraphQLSchema,
+    GraphQLString,
+    GraphQLID,
+    GraphQLInt,
+    GraphQLFloat,
+    GraphQLBoolean,
+    GraphQLList
 } = require('graphql');
+const {
+    object,
+    array,
+    string,
+    number,
+    boolean,
+    lazy
+} = require('joi');
 const {
     typeDictionary
 } = require('../src/helpers');
-const Joi      = require('joi');
 
 const internals  = {};
 const CoreModule = require('../src/implementation');
@@ -52,6 +65,14 @@ describe('UNIT', () => {
     });
 
     describe('.composeType()', () => {
+        it('should error when joi schema is not an object', (done) => {
+            instance = new CoreModule();
+            const joiSchema = string();
+
+            instance.composeType.bind(null, joiSchema).should.throw('Type needs to be an object');
+            done();
+        });
+
         it('should create a GraphQL data type given a joi schema', (done) => {
             instance = new CoreModule();
             const config = {
@@ -62,11 +83,92 @@ describe('UNIT', () => {
             done();
         });
 
+        it('should assign name to Anon if one was not given', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                name: string(),
+                age : number().integer()
+            });
+
+            instance.composeType(joiSchema).name.should.equal('Anon');
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support string scalar types', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: string()
+            });
+
+            instance.composeType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLString );
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support id scalar types', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: string().guid()
+            });
+
+            instance.composeType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLID );
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support float scalar types', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: number()
+            });
+
+            instance.composeType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLFloat );
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support int scalar types', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: number().integer()
+            });
+
+            instance.composeType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLInt );
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support boolean scalar types', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: boolean()
+            });
+
+            instance.composeType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLBoolean );
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support list scalar types', (done) => {//TODO: Arrays need items, go down to scalar types! API.MD
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: array().items(string())
+            });
+
+            instance.composeType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLList(GraphQLString) );
+            done();
+        });
+
+        it('should error when using array type without specifying a scalar type as an item', (done) => {
+            instance = new CoreModule();
+            const joiSchema = object().keys({
+                a: array()
+            });
+
+            instance.composeType.bind(null, joiSchema).should.throw('Need to provide scalar type as an item when using joi array');
+            done();
+        });
+
         it('should create a GraphQL data type and correctly set the args', (done) => {
             instance = new CoreModule();
             const config = {
                 name: 'Human',
-                args: { id: Joi.number().integer() }
+                args: { id: number().integer() }
             };
 
             const expected = {
@@ -78,34 +180,15 @@ describe('UNIT', () => {
             done();
         });
 
-        it('should error when joi schema is not an object', (done) => {
-            instance = new CoreModule();
-            const joiSchema = Joi.string();
-
-            instance.composeType.bind(null, joiSchema).should.throw('Type needs to be an object');
-            done();
-        });
-
-        it('should assign name to Anon if one was not given', (done) => {
-            instance = new CoreModule();
-            const joiSchema = Joi.object().keys({
-                name: Joi.string(),
-                age : Joi.number().integer()
-            });
-
-            instance.composeType(joiSchema).name.should.equal('Anon');
-            done();
-        });
-
         it('should construct graphql data type given a recurisve felicity constructor', (done) => {
             const typeName = 'Subject';
             const config = {
                 name: typeName
             };
-            const joiSchema = Joi.object().keys({
-                prop1: Joi.string(),
-                prop2: Joi.number().integer(),
-                prop3: Joi.lazy(() => joiSchema).description(typeName)
+            const joiSchema = object().keys({
+                prop1: string(),
+                prop2: number().integer(),
+                prop3: lazy(() => joiSchema).description(typeName)
             });
 
             const subject = instance.composeType(joiSchema, config);
@@ -120,19 +203,19 @@ describe('UNIT', () => {
             instance = new CoreModule();
             const config = {
                 name   : 'Cyborg',
-                args   : { id: Joi.number().integer() },
+                args   : { id: number().integer() },
                 resolve: function() {}
             };
-            const joiSchema = Joi.object().keys({
-                name      : Joi.string(),
-                age       : Joi.number().integer(),
-                cyborgMods: Joi.number(),
-                occupation: Joi.object().keys({
-                    title: Joi.string(),
-                    level: Joi.string()
+            const joiSchema = object().keys({
+                name      : string(),
+                age       : number().integer(),
+                cyborgMods: number(),
+                occupation: object().keys({
+                    title: string(),
+                    level: string()
                 }),
-                active     : Joi.boolean(),
-                teamMembers: Joi.array().items(Joi.lazy(() => joiSchema).description('Cyborg')) // May not need users to specify
+                active     : boolean(),
+                teamMembers: array().items(lazy(() => joiSchema).description('Cyborg')) // May not need users to specify
             });
 
             instance.composeType(joiSchema, config).constructor.should.equal( GraphQLObjectType );
@@ -163,7 +246,7 @@ describe('UNIT', () => {
             const schema = {
                 query: {
                     human: Saiyan,
-                    hello: Joi.string().meta({ resolve: () => 'world' })
+                    hello: string().meta({ resolve: () => 'world' })
                 }
             };
 
@@ -187,16 +270,16 @@ describe('UNIT', () => {
 
 
 internals.buildJoiSchema = () => {
-    const schema = Joi.object().keys({
-        name      : Joi.string(),
-        age       : Joi.number().integer(),
-        cyborgMods: Joi.number(),
-        occupation: Joi.object().keys({
-            title: Joi.string(),
-            level: Joi.string()
+    const schema = object().keys({
+        name      : string(),
+        age       : number().integer(),
+        cyborgMods: number(),
+        occupation: object().keys({
+            title: string(),
+            level: string()
         }),
-        active      : Joi.boolean(),
-        affiliations: Joi.array().items(Joi.string())
+        active      : boolean(),
+        affiliations: array().items(string())
     });
 
     return schema;

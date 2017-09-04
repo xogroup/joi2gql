@@ -3,6 +3,7 @@
 const {
     GraphQLObjectType,
     GraphQLString,
+    GraphQLID,
     GraphQLFloat,
     GraphQLInt,
     GraphQLList,
@@ -13,6 +14,7 @@ const {
 module.exports = {
     object : GraphQLObjectType,
     string : GraphQLString,
+    guid   : GraphQLID,
     integer: GraphQLInt,
     number : GraphQLFloat,
     array  : GraphQLList,

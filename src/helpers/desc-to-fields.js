@@ -90,6 +90,8 @@ internals.buildObject = (fields) => {
                     type: fields[i].schema._type
                 });
             } else {
+                Hoek.assert((fields[i].schema._inner.items.length > 0), 'Need to provide scalar type as an item when using joi array');
+
                 Type = new GraphQLList(typeDictionary[fields[i].schema._inner.items[0]._type]);
             }
 
