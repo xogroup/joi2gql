@@ -51,7 +51,7 @@ All tests should not share mutable state.
 */
 
 describe('UNIT', () => {
-    describe('.composeType()', () => {
+    describe('.transmuteType()', () => {
         it('should error when joi schema is not an object', (done) => {
             const joiSchema = string();
 
@@ -198,7 +198,7 @@ describe('UNIT', () => {
         });
     });
 
-    describe('.composeSchema()', () => {
+    describe('.transmuteSchema()', () => {
         it('successfully create a graphql schema', (done) => {
             const config = { name: 'Human' };
             const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
