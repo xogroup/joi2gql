@@ -1,0 +1,43 @@
+{
+  "name": "xo-joiql",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Plugin",
+  "homepage": "https://github.com/Samueljoli/xo-joiql#readme",
+  "main": "src/implementation.js",
+  "bugs": {
+    "url": "https://github.com/Samueljoli/xo-joiql/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Samueljoli/xo-joiql.git"
+  },
+  "keywords": [
+    "plugin",
+    "xo-joiql"
+  ],
+  "author": "Samuel Joli",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "4.x.x",
+    "eslint": "3.x.x",
+    "eslint-plugin-xogroup": "1.x.x",
+    "graphql": "0.x.x",
+    "hoek": "4.x.x",
+    "joi": "10.x.x",
+    "lab": "14.x.x"
+  },
+  "peerDependencies": {
+    "graphql": "0.x.x",
+    "hoek": "4.x.x",
+    "joi": "10.x.x"
+  },
+  "dependencies": {
+    "require-dir": "0.x.x"
+  },
+  "scripts": {
+    "test": "lab -t 100 -L --coverage-exclude src/constructor -a chai",
+    "test-debug": "lab -a code",
+    "test-cov-html": "lab -r html -o coverage.html -a chai"
+  }
+}
