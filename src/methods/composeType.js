@@ -2,7 +2,7 @@
 
 const Hoek = require('hoek');
 const {
-    descToFields
+    joiToGraphql
 } = require('../helpers');
 
 module.exports = (schema, config) => {
@@ -11,5 +11,5 @@ module.exports = (schema, config) => {
 
     Hoek.assert((typeConstructor._type === 'object'), 'Type needs to be an object');
 
-    return descToFields( typeConstructor );
+    return joiToGraphql( typeConstructor );
 };

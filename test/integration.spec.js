@@ -10,8 +10,7 @@ const { graphql } = require('graphql');
 const Joi         = require('joi');
 
 const internals  = {};
-const CoreModule = require('../src/implementation');
-let instance;
+const Vodou = require('../src/implementation');
 
 /*
 Red Green RefactorA
@@ -58,9 +57,8 @@ const database = {
 
 describe('INTEGRATION', () => {
     it('should execute a graphql query given a GraphQL data type', () => {
-        instance = new CoreModule();
         const query = '{ cyborg(id: 1) { name } }';
-        const graphqlSchema = instance.composeSchema( internals.buildQuerySchema() );
+        const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema() );
 
         return graphql( graphqlSchema, query ).then((res) => {
             res.data.cyborg.name.should.equal('Samuel Joli');
@@ -68,8 +66,7 @@ describe('INTEGRATION', () => {
     });
 
     it('should execute a graphql query given a Joi schema', () => {
-        instance = new CoreModule();
-        const graphqlSchema = instance.composeSchema({
+        const graphqlSchema = Vodou.transmuteSchema({
             query: {
                 hello: Joi.string().meta({ resolve: () => 'world' })
             }
@@ -82,13 +79,12 @@ describe('INTEGRATION', () => {
     });
 
     it('should execute a graphql query given a complex joi schema', () => {
-        instance = new CoreModule();
         let schema; // Will be redefined in internals.buildJoiSchema
         const joiSchemaOverride = Joi.object().keys({
             teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg')) //TODO: Since schema is not defined, pull back in setup
         });
 
-        const graphqlSchema = instance.composeSchema( internals.buildQuerySchema(joiSchemaOverride) );
+        const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema(joiSchemaOverride) );
         const query = `
             { 
                 cyborg(id: 2) { 
@@ -152,7 +148,7 @@ internals.buildQuerySchema = (schemaOverride) => {
             return database[args.id];
         }
     };
-    const Cyborg = instance.composeType( internals.buildJoiSchema(schemaOverride), config );
+    const Cyborg = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
     const schema = {
         query: {
             cyborg: Cyborg

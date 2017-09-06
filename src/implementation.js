@@ -1,17 +1,5 @@
 'use strict';
 
-const Constructor = require('./constructor');
-const Hoek = require('hoek');
+exports.transmuteType   = require('./methods/composeType');
+exports.transmuteSchema = require('./methods/composeSchema');
 
-const defaultOptions = {
-    name: 'xo-joiql'
-};
-
-Hoek.merge(Constructor.prototype, {
-    options      : defaultOptions,
-    config       : require('./methods/config'),
-    composeType  : require('./methods/composeType'),
-    composeSchema: require('./methods/composeSchema')
-});
-
-module.exports = Constructor;
