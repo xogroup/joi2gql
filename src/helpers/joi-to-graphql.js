@@ -63,49 +63,48 @@ internals.buildObject = (fields) => {
     let attrs = {};
 
     for (let i = 0, len = fields.length; i < len; i++) {
-        if (fields[i].schema._type === 'object') {
-            let key = fields[i].key;
+        let field = fields[i];
+        let key = field.key;
 
+        if (field.schema._type === 'object') {
             let Type = new GraphQLObjectType({
-                name  : key.charAt(0).toUpperCase() + key.slice(1), //TODO: Is it worth bringing in lodash
+                name  : field.key.charAt(0).toUpperCase() + field.key.slice(1), //TODO: Is it worth bringing in lodash
                 fields: internals.buildObject(fields[i].schema._inner.children)
             });
 
-            attrs[fields[i].key] = {
+            attrs[key] = {
                 type: Type
             };
 
-            cache[fields[i].key] = Type;
+            cache[key] = Type;
         }
 
-        if (fields[i].schema._type === 'array') {
+        if (field.schema._type === 'array') {
             let Type;
             let chain = 'schema._inner.items.0._flags.lazy';
 
-            if (Hoek.reach(fields[i], chain)) {
-                Type = fields[i].schema._inner.items[0]._description;
+            if (Hoek.reach(field, chain)) {
+                Type = field.schema._inner.items[0]._description;
 
                 lazyLoadQueue.push({
-                    key : fields[i].key,
-                    type: fields[i].schema._type
+                    key,
+                    type: field.schema._type
                 });
             } else {
-                Hoek.assert((fields[i].schema._inner.items.length > 0), 'Need to provide scalar type as an item when using joi array');
+                Hoek.assert((field.schema._inner.items.length > 0), 'Need to provide scalar type as an item when using joi array');
 
-                Type = new GraphQLList(typeDictionary[fields[i].schema._inner.items[0]._type]);
+                Type = new GraphQLList(typeDictionary[field.schema._inner.items[0]._type]);
             }
 
-            attrs[fields[i].key] = {
+            attrs[key] = {
                 type: Type
             };
 
-            cache[fields[i].key] = Type;
+            cache[key] = Type;
         }
 
-        if (fields[i].schema._type === 'lazy') {
-            let key = fields[i].key;
-
-            let Type = fields[i].schema._description;
+        if (field.schema._type === 'lazy') {
+            let Type = field.schema._description;
 
             lazyLoadQueue.push({
                 key,
@@ -119,11 +118,11 @@ internals.buildObject = (fields) => {
             cache[key] = Type;
         }
 
-        if (cache[fields[i].key]) {
+        if (cache[key]) {
             continue; //TODO: May want to just return the cache, look into tradeoffs
         }
 
-        attrs[fields[i].key] = internals.setType(fields[i].schema);
+        attrs[key] = internals.setType(field.schema);
     }
 
 
