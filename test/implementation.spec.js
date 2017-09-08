@@ -14,7 +14,8 @@ const {
     GraphQLInt,
     GraphQLFloat,
     GraphQLBoolean,
-    GraphQLList
+    GraphQLList,
+    GraphQLNonNull
 } = require('graphql');
 const {
     object,
@@ -138,6 +139,28 @@ describe('UNIT', () => {
             });
 
             Vodou.transmuteType.bind(null, joiSchema).should.throw('Need to provide scalar type as an item when using joi array');
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support required fields', (done) => {
+            const joiSchema = object().keys({
+                a: number().required()
+            });
+
+            const config = {name: 'Super'};
+
+            Vodou.transmuteType(joiSchema, config, true)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLFloat) );
+            done();
+        });
+
+        it('should properly create a GraphQL data type and support complex required fields', (done) => {
+            const joiSchema = object().keys({
+                a: number().integer().required()
+            });
+
+            const config = {name: 'Super'};
+
+            Vodou.transmuteType(joiSchema, config, true)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLInt) );
             done();
         });
 

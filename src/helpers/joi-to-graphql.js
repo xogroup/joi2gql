@@ -7,7 +7,7 @@ const {
 const typeDictionary = require('./type-dictionary');
 const Hoek           = require('hoek');
 const internals      = {};
-const cache          = {};
+let cache            = {};
 let lazyLoadQueue    = [];
 
 module.exports = (constructor) => {
@@ -15,7 +15,7 @@ module.exports = (constructor) => {
     let compiledFields;
     const { name, args, resolve } = constructor._meta[0];
 
-    compiledFields = internals.buildObject(constructor._inner.children);
+    compiledFields = internals.buildFields(constructor._inner.children);
 
     if (lazyLoadQueue.length) {
         target = new GraphQLObjectType({
@@ -41,7 +41,15 @@ module.exports = (constructor) => {
 
 internals.setType = (schema) => { // Helpful for Int or Float
     if (schema._tests.length) {
+        if (schema._flags.presence) {
+            return { type: new typeDictionary.required(typeDictionary[schema._tests[0].name]) };
+        }
+
         return { type: typeDictionary[schema._tests[0].name] };
+    }
+
+    if (schema._flags.presence === 'required') {
+        return { type: new typeDictionary.required(typeDictionary[schema._type]) };
     }
 
     return { type: typeDictionary[schema._type] };
@@ -59,7 +67,7 @@ internals.processLazyLoadQueue = (attrs, recursiveType) => {
     return attrs;
 };
 
-internals.buildObject = (fields) => {
+internals.buildFields = (fields) => {
     let attrs = {};
 
     for (let i = 0, len = fields.length; i < len; i++) {
@@ -69,7 +77,7 @@ internals.buildObject = (fields) => {
         if (field.schema._type === 'object') {
             let Type = new GraphQLObjectType({
                 name  : field.key.charAt(0).toUpperCase() + field.key.slice(1), //TODO: Is it worth bringing in lodash
-                fields: internals.buildObject(fields[i].schema._inner.children)
+                fields: internals.buildFields(fields[i].schema._inner.children)
             });
 
             attrs[key] = {
@@ -81,9 +89,9 @@ internals.buildObject = (fields) => {
 
         if (field.schema._type === 'array') {
             let Type;
-            let chain = 'schema._inner.items.0._flags.lazy';
+            let pathToMethod = 'schema._inner.items.0._flags.lazy';
 
-            if (Hoek.reach(field, chain)) {
+            if (Hoek.reach(field, pathToMethod)) {
                 Type = field.schema._inner.items[0]._description;
 
                 lazyLoadQueue.push({
@@ -125,11 +133,12 @@ internals.buildObject = (fields) => {
         attrs[key] = internals.setType(field.schema);
     }
 
-
     return function(recursiveType) {
         if (recursiveType) {
             return internals.processLazyLoadQueue(attrs, recursiveType);
         }
+
+        cache = Object.create(null); //Empty cache => TODO: Move up
 
         return attrs;
     };

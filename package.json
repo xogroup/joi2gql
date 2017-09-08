@@ -36,7 +36,7 @@
     "require-dir": "0.x.x"
   },
   "scripts": {
-    "test": "lab -t 100 -L --coverage-exclude src/constructor -a chai",
+    "test": "lab -t 100 -L -a chai",
     "test-debug": "lab -a code",
     "test-cov-html": "lab -r html -o coverage.html -a chai"
   }
