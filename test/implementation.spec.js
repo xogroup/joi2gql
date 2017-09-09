@@ -18,6 +18,7 @@ const {
     GraphQLNonNull
 } = require('graphql');
 const {
+    any,
     object,
     array,
     string,
@@ -147,9 +148,7 @@ describe('UNIT', () => {
                 a: number().required()
             });
 
-            const config = {name: 'Super'};
-
-            Vodou.transmuteType(joiSchema, config, true)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLFloat) );
+            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLFloat) );
             done();
         });
 
@@ -158,9 +157,59 @@ describe('UNIT', () => {
                 a: number().integer().required()
             });
 
-            const config = {name: 'Super'};
+            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLInt) );
+            done();
+        });
 
-            Vodou.transmuteType(joiSchema, config, true)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLInt) );
+        it('should properly create a GraphQL data type and support enum scalar types', (done) => {
+            const scalars = [
+                {
+                    value      : 'a',
+                    derivedFrom: 0
+                },
+                {
+                    value      : 'b',
+                    derivedFrom: 1
+                }
+            ];
+            const joiSchema = object().keys({
+                a: any().only(scalars).meta({ name: 'A' })
+            });
+            const expected = {
+                name  : 'A',
+                values: {
+                    a: { value: 0 },
+                    b: { value: 1 }
+                }
+            };
+
+            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
+            done();
+        });
+
+        it('should properly create a GraphQL data type, support enum scalar types and assign Anon as name if one is not provided', (done) => {
+            const scalars = [
+                {
+                    value      : 'a',
+                    derivedFrom: 0
+                },
+                {
+                    value      : 'b',
+                    derivedFrom: 1
+                }
+            ];
+            const joiSchema = object().keys({
+                a: any().only(scalars)
+            });
+            const expected = {
+                name  : 'Anon',
+                values: {
+                    a: { value: 0 },
+                    b: { value: 1 }
+                }
+            };
+
+            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
             done();
         });
 

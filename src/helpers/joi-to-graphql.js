@@ -39,6 +39,16 @@ module.exports = (constructor) => {
     return target;
 };
 
+internals.buildEnumFields = (values) => {
+    let attrs = {};
+
+    for (let i = 0, len = values.length; i < len; i++) {
+        attrs[values[i].value] = { value: values[i].derivedFrom };
+    }
+
+    return attrs;
+};
+
 internals.setType = (schema) => { // Helpful for Int or Float
     if (schema._tests.length) {
         if (schema._flags.presence) {
@@ -50,6 +60,17 @@ internals.setType = (schema) => { // Helpful for Int or Float
 
     if (schema._flags.presence === 'required') {
         return { type: new typeDictionary.required(typeDictionary[schema._type]) };
+    }
+
+    if (schema._flags.allowOnly) { // GraphQLEnumType
+        let name = Hoek.reach(schema, '_meta.0.name') || 'Anon';
+
+        const config = {
+            name,
+            values: internals.buildEnumFields(schema._valids._set)
+        };
+
+        return { type: new typeDictionary.enum(config) };
     }
 
     return { type: typeDictionary[schema._type] };
