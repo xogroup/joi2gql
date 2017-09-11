@@ -98,7 +98,7 @@ internals.buildFields = (fields) => {
         if (field.schema._type === 'object') {
             let Type = new GraphQLObjectType({
                 name  : field.key.charAt(0).toUpperCase() + field.key.slice(1), //TODO: Is it worth bringing in lodash
-                fields: internals.buildFields(fields[i].schema._inner.children)
+                fields: internals.buildFields(field.schema._inner.children)
             });
 
             attrs[key] = {
@@ -154,12 +154,12 @@ internals.buildFields = (fields) => {
         attrs[key] = internals.setType(field.schema);
     }
 
+    cache = Object.create(null); //Empty cache
+
     return function(recursiveType) {
         if (recursiveType) {
             return internals.processLazyLoadQueue(attrs, recursiveType);
         }
-
-        cache = Object.create(null); //Empty cache => TODO: Move up
 
         return attrs;
     };
