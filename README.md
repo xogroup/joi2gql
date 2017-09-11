@@ -1,54 +1,55 @@
-#xo-joiql
-Description of this hapi plugin
+# vodou
+Easily convert [Joi](https://github.com/hapijs/joi/) schemas into GraphQL data types.
 
-## Download
-
-#### How to install this Plugin
+## Installation 
 ```Text
 npm install --save xo-joiql
 ```
 
 ## Usage
-```Javascript
-//Some sort of quick example on how to initialize and use the module
+```js
+const {
+ object(),
+ string(),
+ number().
+ array(),
+} = require('joi');
+const Vodou = require('vodou');
+
+const joiSchema = object().keys({
+ key1: string(),
+ key2: number().integer(),
+ key3: array().items(string());
+ key4: object().keys({
+  subKey1: string(),
+  subKey2: number()
+ })
+});
+
+const config = {
+ name: 'Data Type',
+ args: { id: string().guid() },
+ resolve: (root, args) => {
+  /* Some resolver logic */
+ }
+};
+
+const GraphQLDataType = Vodou.transmuteType(joiSchema, config);
 ```
 
-## Available Entry-points
-
+## API
+See the detailed [API](https://github.com/Samueljoli/xo-joiql/blob/master/.API.md) reference.
 
 # Development Usage
 
 ## Install Dependencies
-Install the dependencies for this project and create shrinkwrap.
+Install the dependencies based on package.json
 ```Text
-make clean
-```
-
-Install the dependencies based on package.json or shrinkwrap.
-```Text
-make install
+npm i
 ```
 
 ## Test Project
-Run tests inside your container (This should be uses)
+Run tests
 ```Text
-make run
+npm t
 ```
-
-Run mocha test locally.
-```Text
-make test
-```
-
-Both methods create ca coverage report after executing
-
-## Debug Project
-Run tests in debug mode.  Allows interactive debug from Webstorm.
-```Text
-make debug-test
-```
-
-Run tests in debug mode inside of Docker.  Allows interactive debug from Webstorm with container port 5858 opened.
- ```Text
- make run-debug test
- ```
