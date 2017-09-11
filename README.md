@@ -38,7 +38,7 @@ const GraphQLDataType = Vodou.transmuteType(joiSchema, config);
 ```
 
 ## API
-See the detailed [API](https://github.com/Samueljoli/xo-joiql/blob/master/.API.md) reference.
+See the detailed [API](https://github.com/Samueljoli/xo-joiql/blob/master/API.md) reference.
 
 # Development Usage
 
