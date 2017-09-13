@@ -13,13 +13,14 @@ let lazyLoadQueue    = [];
 module.exports = (constructor) => {
     let target;
     let compiledFields;
-    const { name, args, resolve } = constructor._meta[0];
+    const { name, args, resolve, description } = constructor._meta[0];
 
     compiledFields = internals.buildFields(constructor._inner.children);
 
     if (lazyLoadQueue.length) {
         target = new GraphQLObjectType({
             name,
+            description,
             fields: function() {
                 return compiledFields(target);
             },
@@ -29,6 +30,7 @@ module.exports = (constructor) => {
     } else {
         target = new GraphQLObjectType({
             name,
+            description,
             fields: compiledFields(),
             args  : internals.buildArgs(args),
             resolve

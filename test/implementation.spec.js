@@ -80,6 +80,20 @@ describe('UNIT', () => {
             done();
         });
 
+        it('should properly create a GraphQL data type and support descriptions', (done) => {
+            const desc = 'Some description';
+            const joiSchema = object().keys({
+                a: string()
+            });
+            const config = {
+                name       : 'A',
+                description: desc
+            };
+
+            Vodou.transmuteType(joiSchema, config).description.should.equal(desc);
+            done();
+        });
+
         it('should properly create a GraphQL data type and support string scalar types', (done) => {
             const joiSchema = object().keys({
                 a: string()
