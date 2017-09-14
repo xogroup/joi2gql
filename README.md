@@ -8,30 +8,27 @@ npm install --save xo-joiql
 
 ## Usage
 ```js
-const {
- object(),
- string(),
- number().
- array(),
-} = require('joi');
+const Joi   = require('joi');
 const Vodou = require('vodou');
 
 const joiSchema = object().keys({
- key1: string(),
- key2: number().integer(),
- key3: array().items(string());
- key4: object().keys({
-  subKey1: string(),
-  subKey2: number()
- })
+    key1: Joi.string(),
+    key2: Joi.number().integer(),
+    key3: Joi.array().items(Joi.string()),
+    key4: Joi.object().keys({
+        subKey1: Joi.string(),
+        subKey2: Joi.number()
+    })
 });
 
 const config = {
- name: 'Data Type',
- args: { id: string().guid() },
- resolve: (root, args) => {
-  /* Some resolver logic */
- }
+    name: 'Data Type',
+    args: {
+        id: Joi.string().guid()
+    },
+    resolve: (root, args) => {
+        /* Some resolver logic */
+    }
 };
 
 const GraphQLDataType = Vodou.transmuteType(joiSchema, config);
@@ -40,16 +37,19 @@ const GraphQLDataType = Vodou.transmuteType(joiSchema, config);
 ## API
 See the detailed [API](https://github.com/Samueljoli/xo-joiql/blob/master/API.md) reference.
 
-# Development Usage
+## Contributing
 
-## Install Dependencies
-Install the dependencies based on package.json
-```Text
-npm i
+We love community and contributions! Please check out our [guidelines](http://github.com/xogroup) before making any PRs.
+
+## Setting up for development
+
+Getting yourself setup and bootstrapped is easy.  Use the following commands after you clone down.
+
+```
+npm install && npm test
 ```
 
-## Test Project
-Run tests
-```Text
-npm t
-```
+## GraphQL types not yet supported.
+
+- `GraphQLInterfaceType`
+- `GraphQLUnionType`
