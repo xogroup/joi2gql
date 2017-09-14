@@ -6,7 +6,7 @@ Easily convert [Joi](https://github.com/hapijs/joi/) schemas into GraphQL data t
 npm install --save xo-joiql
 ```
 
-## Usage
+## Example
 ```js
 const Joi   = require('joi');
 const Vodou = require('vodou');
@@ -21,17 +21,64 @@ const joiSchema = object().keys({
     })
 });
 
+const GraphQLDataType = Vodou.transmuteType(joiSchema);
+```
+
+## Usage
+```js
+const {
+    Server
+} = require('hapi');
+const {
+    graphqlHapi 
+} = require('apollo-server-hapi');
+const Joi   = require('joi');
+const Vodou = require('vodou');
+
+const port   = '3000';
+const host   = 'localhost';
+const server = new Server();
+
+server.connection({ port, host });
+
+const songSchema = Joi.object().keys({
+    artist: Joi.string(),
+    title : Joi.string(),
+    length: Joi.number().integer(),
+    lyrics: Joi.string()
+});
+
 const config = {
-    name: 'Data Type',
+    name: 'Song',
     args: {
-        id: Joi.string().guid()
+        id: Joi.number().integer()
     },
-    resolve: (root, args) => {
-        /* Some resolver logic */
+};
+
+const Song = Vodou.transmuteType(songSchema, config);
+const rootGQLSchema = {
+    query: {
+        song: Song
     }
 };
 
-const GraphQLDataType = Vodou.transmuteType(joiSchema, config);
+server.register({
+    register: graphqlHapi,
+    options : {
+        path          : '/graphql',
+        graphqlOptions: {
+            schema: Vodou.transmuteSchema( rootGQLSchema )
+        }
+    }
+});
+
+server.start(() => {
+    if (err) {
+        throw new Error(err);
+    }
+    
+    console.log(`Entering the matrix on port: ${server.info.port}`
+});
 ```
 
 ## API
