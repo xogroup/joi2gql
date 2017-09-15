@@ -90,7 +90,7 @@ See the detailed [API](https://github.com/xogroup/joi2ql/blob/master/API.md) ref
 
 ## Contributing
 
-We love community and contributions! Please check out our [guidelines](http://github.com/xogroup) before making any PRs.
+We love community and contributions! Please check out our [guidelines](http://github.com/xogroup/joi2ql/blob/master/.github/CONTRIBUTING.md) before making any PRs.
 
 ## Setting up for development
 
