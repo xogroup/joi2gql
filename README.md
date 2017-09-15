@@ -1,15 +1,19 @@
-# vodou
+# Joi2QL
 Easily convert [Joi](https://github.com/hapijs/joi/) schemas into GraphQL data types.
+
+[![Build Status](https://travis-ci.org/xogroup/joi2ql.svg?branch=master)](https://travis-ci.org/xogroup/joi2ql)
+
+Lead Mainter: [Samuel Joli](https://github.com/Samueljoli)
 
 ## Installation 
 ```Text
-npm install --save xo-joiql
+npm install --save joi2ql
 ```
 
 ## Example
 ```js
-const Joi   = require('joi');
-const Vodou = require('vodou');
+const Joi    = require('joi');
+const Joi2QL = require('joi2ql');
 
 const joiSchema = object().keys({
     key1: Joi.string(),
@@ -21,7 +25,7 @@ const joiSchema = object().keys({
     })
 });
 
-const GraphQLDataType = Vodou.transmuteType(joiSchema);
+const GraphQLDataType = Joi2QL.transmuteType(joiSchema);
 ```
 
 ## Usage
@@ -32,8 +36,8 @@ const {
 const {
     graphqlHapi 
 } = require('apollo-server-hapi');
-const Joi   = require('joi');
-const Vodou = require('vodou');
+const Joi    = require('joi');
+const Joi2QL = require('joi2ql');
 
 const port   = '3000';
 const host   = 'localhost';
@@ -55,7 +59,7 @@ const config = {
     },
 };
 
-const Song = Vodou.transmuteType(songSchema, config);
+const Song = Joi2QL.transmuteType(songSchema, config);
 const rootGQLSchema = {
     query: {
         song: Song
@@ -67,7 +71,7 @@ server.register({
     options : {
         path          : '/graphql',
         graphqlOptions: {
-            schema: Vodou.transmuteSchema( rootGQLSchema )
+            schema: Joi2QL.transmuteSchema( rootGQLSchema )
         }
     }
 });
@@ -82,7 +86,7 @@ server.start(() => {
 ```
 
 ## API
-See the detailed [API](https://github.com/Samueljoli/xo-joiql/blob/master/API.md) reference.
+See the detailed [API](https://github.com/xogroup/joi2ql/blob/master/API.md) reference.
 
 ## Contributing
 

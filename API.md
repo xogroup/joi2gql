@@ -1,6 +1,6 @@
 # 1.1.0 API Reference
   
-## Vodou
+## Joi2QL
 
 ### `transmuteType(schema, [config])`
 Accepts a joi schema and options object defining the name, args and resolver.
@@ -27,7 +27,7 @@ const options = {
   }
 };
 
-const Film = Vodou.transmuteType(schema, options);
+const Film = Joi2QL.transmuteType(schema, options);
 ```
 
 ### `transmuteSchema(schema)`
@@ -35,7 +35,7 @@ Helper method that will create a Root GraphQL schema. Supports: `Query`, `Mutati
 - `schema` - Plain javascript object. Checks for the prescence of either a `query`, `mutation`, or `subscription` key at the parent level. The value needs to be a GraphQL data type.
 
 ```js
-const Film = Vodou.transmuteType(schema, config);
+const Film = Joi2QL.transmuteType(schema, config);
 
 const schema = {
   query: {
@@ -43,7 +43,7 @@ const schema = {
   }
 };
 
-const GraphQLSchema = Vodou.transmuteSchema(schema);
+const GraphQLSchema = Joi2QL.transmuteSchema(schema);
 ```
 
 ## Mappings
