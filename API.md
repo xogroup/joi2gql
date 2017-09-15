@@ -62,5 +62,37 @@ Reference of Joi to GraphQL type mappings.
 | `any().required()` | `GraphQLNonNull` |
 | `any().only()` | `GraphQLEnumType` |
 
-### Gotchas:
-- `GraphQLList`: You'll need to provide an item when using `array()`. Eg: `array().items(string())`
+### GraphQL Type Examples ( non-scalar ):
+- `GraphQLList`
+  ```js
+  const Joi    = require('joi');
+  const Joi2QL = require('joi2ql');
+  
+  const listSchema = Joi.object().keys({
+    a: Joi.array().items(Joi.string())
+  });
+  
+  const List = Joi2QL.transmuteType( listSchema );
+  ```
+- `GraphQLEnumType`
+  ```js
+  const Joi    = require('joi');
+  const Joi2QL = require('joi2ql');
+  
+  const scalars = [
+    {
+      value      : 'a',
+      derivedFrom: 0
+    },
+    {
+      value      : 'b',
+      derivedFrom: 1
+    }
+  ];
+  
+  const enumSchema = Joi.object().keys({
+    a: Joi.any().only(scalars).meta({ name: 'A' })
+  });
+  
+  const Enum = Joi2QL.transmuteType( enumSchema );
+  ```
