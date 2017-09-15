@@ -1,4 +1,5 @@
-# Joi2QL
+![alt text](http://i65.tinypic.com/28jwexe.png)
+
 Easily convert [Joi](https://github.com/hapijs/joi/) schemas into GraphQL data types.
 
 [![Build Status](https://travis-ci.org/xogroup/joi2ql.svg?branch=master)](https://travis-ci.org/xogroup/joi2ql)
@@ -94,7 +95,7 @@ We love community and contributions! Please check out our [guidelines](http://gi
 
 ## Setting up for development
 
-Getting yourself setup and bootstrapped is easy.  Use the following commands after you clone down.
+Install dependencies and run test.
 
 ```
 npm install && npm test
