@@ -10,6 +10,7 @@ Lead Mainter: [Samuel Joli](https://github.com/Samueljoli)
 ```Text
 npm install --save joi2ql
 ```
+> graphql-js is listed as a peer dependency. `joi2ql` does not install it's own instance of graphql and instead requires parent module to provide it. This avoids any version collisions.
 
 ## Example
 ```js
