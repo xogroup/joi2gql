@@ -3,18 +3,21 @@
   "version": "1.1.0",
   "private": false,
   "description": "Plugin",
-  "homepage": "https://github.com/Samueljoli/xo-joiql#readme",
+  "homepage": "https://github.com/xogroup/joi2ql#readme",
   "main": "src/implementation.js",
   "bugs": {
-    "url": "https://github.com/Samueljoli/xo-joiql/issues"
+    "url": "https://github.com/xogroup/joi2ql/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Samueljoli/xo-joiql.git"
+    "url": "git+https://github.com/xogroup/joi2ql.git"
   },
   "keywords": [
     "plugin",
-    "xo-joiql"
+    "joi2ql",
+    "graphql",
+    "joi",
+    "schema"
   ],
   "author": "Samuel Joli",
   "license": "ISC",
