@@ -6,30 +6,13 @@ const lab = exports.lab = script();
 const { describe, it } = lab;
 assertions.should();
 
-const { graphql } = require('graphql');
-const Joi         = require('joi');
+const {
+    graphql
+} = require('graphql');
+const Joi = require('joi');
 
 const internals  = {};
 const Vodou = require('../src/implementation');
-
-/*
-Red Green RefactorA
-Red: What is in a good failing test?
-1. What were you testing
-2. What should it do
-3. What was the actual output
-4. What was the expected output
-
-R.I.T.E.
-- Readable
-- Isolated or Integrated
-- Thorough
-- Explicit
-
-TODO: Keep the code in a unit test to a minimum
-Use factory functions for test setup and tear down
-All tests should not share mutable state.
-*/
 
 const database = {
     1: {
@@ -57,11 +40,11 @@ const database = {
 
 describe('INTEGRATION', () => {
     it('should execute a graphql query given a GraphQL data type', () => {
-        const query = '{ cyborg(id: 1) { name } }';
+        const query = '{ test(id: 1) { name } }';
         const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema() );
 
         return graphql( graphqlSchema, query ).then((res) => {
-            res.data.cyborg.name.should.equal('Samuel Joli');
+            res.data.test.name.should.equal('Samuel Joli');
         });
     });
 
@@ -87,7 +70,7 @@ describe('INTEGRATION', () => {
         const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema(joiSchemaOverride) );
         const query = `
             { 
-                cyborg(id: 2) { 
+                test(id: 2) {
                     name
                     age
                     cyborgMods
@@ -106,7 +89,7 @@ describe('INTEGRATION', () => {
         `;
 
         return graphql( graphqlSchema, query ).then((response) => {
-            const result = response.data.cyborg;
+            const result = response.data.test;
 
             result.name.should.equal('Motoko Kusanagi'); //String
             result.age.should.equal(31); //Int
@@ -142,16 +125,16 @@ internals.buildJoiSchema = (args) => {
 
 internals.buildQuerySchema = (schemaOverride) => {
     const config = {
-        name   : 'Cyborg',
+        name   : 'Test',
         args   : { id: Joi.number() },
         resolve: function(root, args) {
             return database[args.id];
         }
     };
-    const Cyborg = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
+    const Test = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
     const schema = {
         query: {
-            cyborg: Cyborg
+            test: Test
         }
     };
 

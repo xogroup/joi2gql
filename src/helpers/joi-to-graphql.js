@@ -37,7 +37,6 @@ module.exports = (constructor) => {
         });
     }
 
-    //console.log(target._typeConfig.fields());
     return target;
 };
 
@@ -99,7 +98,7 @@ internals.buildFields = (fields) => {
 
         if (field.schema._type === 'object') {
             let Type = new GraphQLObjectType({
-                name  : field.key.charAt(0).toUpperCase() + field.key.slice(1), //TODO: Is it worth bringing in lodash
+                name  : field.key.charAt(0).toUpperCase() + field.key.slice(1),
                 fields: internals.buildFields(field.schema._inner.children)
             });
 
