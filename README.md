@@ -16,7 +16,7 @@ npm install --save joi2ql
 const Joi    = require('joi');
 const Joi2QL = require('joi2ql');
 
-const joiSchema = object().keys({
+const joiSchema = Joi.object().keys({
     key1: Joi.string(),
     key2: Joi.number().integer(),
     key3: Joi.array().items(Joi.string()),

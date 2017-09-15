@@ -38,6 +38,7 @@
   "scripts": {
     "test": "lab -t 100 -L -a chai",
     "test-debug": "lab -a code",
-    "test-cov-html": "lab -r html -o coverage.html -a chai"
+    "test-cov-html": "lab -r html -o coverage.html -a chai",
+    "lint": "node_modules/.bin/eslint --fix src/ test/"
   }
 }
