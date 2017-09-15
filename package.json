@@ -28,12 +28,10 @@
     "lab": "14.x.x"
   },
   "peerDependencies": {
-    "graphql": "0.x.x",
-    "hoek": "4.x.x",
-    "joi": "10.x.x"
+    "graphql": "0.x.x"
   },
   "dependencies": {
-    "require-dir": "0.x.x"
+    "hoek": "4.2.0"
   },
   "scripts": {
     "test": "lab -t 100 -L -a chai",

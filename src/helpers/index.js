@@ -1,7 +1,6 @@
 'use strict';
 
-const RequireDir = require('require-dir');
-
-module.exports = RequireDir(null, {
-    camelcase: true
-});
+module.exports = {
+    joiToGraphql  : require('./joi-to-graphql'),
+    typeDictionary: require('./type-dictionary')
+};
