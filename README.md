@@ -38,6 +38,7 @@ const {
 const {
     graphqlHapi 
 } = require('apollo-server-hapi');
+
 const Joi    = require('joi');
 const Joi2QL = require('joi2ql');
 
@@ -51,7 +52,6 @@ const songSchema = Joi.object().keys({
     artist: Joi.string(),
     title : Joi.string(),
     length: Joi.number().integer(),
-    lyrics: Joi.string()
 });
 
 const config = {
@@ -59,6 +59,13 @@ const config = {
     args: {
         id: Joi.number().integer()
     },
+    resolve: (root, args) => {
+        return {
+            artist: 'Tycho',
+            title : 'Awake',
+            length: 4.43
+        };
+    }
 };
 
 const Song = Joi2QL.transmuteType(songSchema, config);

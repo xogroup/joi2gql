@@ -6,7 +6,7 @@
 Accepts a joi schema and options object defining the name, args and resolver.
 - `schema` - Joi schema. *Will **throw** if schema is not an object type.*
 - `config` - Optional Javascript object detailing:
-  - `name` - Name given to GraphQL data type.
+  - `name` - Name given to GraphQL data type. *Name of Anon will be provided if one is not given*
   - `args` - Arguments provided as parameters to GraphQL resolver function.
   - `resolve` - Function that is used as resolver for this data type.
 
