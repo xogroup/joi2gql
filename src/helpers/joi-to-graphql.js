@@ -4,30 +4,32 @@ const {
     GraphQLObjectType,
     GraphQLList
 } = require('graphql');
-const typeDictionary = require('./type-dictionary');
+const TypeDictionary = require('./type-dictionary');
 const Hoek           = require('hoek');
 const internals      = {};
 let cache            = {};
-let lazyLoadQueue    = [];
+const lazyLoadQueue  = [];
 
 module.exports = (constructor) => {
+
     let target;
-    let compiledFields;
     const { name, args, resolve, description } = constructor._meta[0];
 
-    compiledFields = internals.buildFields(constructor._inner.children);
+    const compiledFields = internals.buildFields(constructor._inner.children);
 
     if (lazyLoadQueue.length) {
         target = new GraphQLObjectType({
             name,
             description,
-            fields: function() {
+            fields: function () {
+
                 return compiledFields(target);
             },
             args: internals.buildArgs(args),
             resolve
         });
-    } else {
+    }
+    else {
         target = new GraphQLObjectType({
             name,
             description,
@@ -41,9 +43,10 @@ module.exports = (constructor) => {
 };
 
 internals.buildEnumFields = (values) => {
-    let attrs = {};
 
-    for (let i = 0, len = values.length; i < len; i++) {
+    const attrs = {};
+
+    for (let i = 0; i < values.length;  ++i) {
         attrs[values[i].value] = { value: values[i].derivedFrom };
     }
 
@@ -51,38 +54,41 @@ internals.buildEnumFields = (values) => {
 };
 
 internals.setType = (schema) => { // Helpful for Int or Float
+
     if (schema._tests.length) {
         if (schema._flags.presence) {
-            return { type: new typeDictionary.required(typeDictionary[schema._tests[0].name]) };
+            return { type: new TypeDictionary.required(TypeDictionary[schema._tests[0].name]) };
         }
 
-        return { type: typeDictionary[schema._tests[0].name] };
+        return { type: TypeDictionary[schema._tests[0].name] };
     }
 
     if (schema._flags.presence === 'required') {
-        return { type: new typeDictionary.required(typeDictionary[schema._type]) };
+        return { type: new TypeDictionary.required(TypeDictionary[schema._type]) };
     }
 
     if (schema._flags.allowOnly) { // GraphQLEnumType
-        let name = Hoek.reach(schema, '_meta.0.name') || 'Anon';
+        const name = Hoek.reach(schema, '_meta.0.name') || 'Anon';
 
         const config = {
             name,
             values: internals.buildEnumFields(schema._valids._set)
         };
 
-        return { type: new typeDictionary.enum(config) };
+        return { type: new TypeDictionary.enum(config) };
     }
 
-    return { type: typeDictionary[schema._type] };
+    return { type: TypeDictionary[schema._type] };
 };
 
 internals.processLazyLoadQueue = (attrs, recursiveType) => {
-    for (let i = 0, len = lazyLoadQueue.length; i < len; i++) {
+
+    for (let i = 0; i < lazyLoadQueue.length; ++i) {
         if (lazyLoadQueue[i].type === 'object') {
             attrs[lazyLoadQueue[i].key] = { type: recursiveType };
-        } else {
-            attrs[lazyLoadQueue[i].key] = { type: new typeDictionary[lazyLoadQueue[i].type](recursiveType) };
+        }
+        else {
+            attrs[lazyLoadQueue[i].key] = { type: new TypeDictionary[lazyLoadQueue[i].type](recursiveType) };
         }
     }
 
@@ -90,14 +96,15 @@ internals.processLazyLoadQueue = (attrs, recursiveType) => {
 };
 
 internals.buildFields = (fields) => {
-    let attrs = {};
 
-    for (let i = 0, len = fields.length; i < len; i++) {
-        let field = fields[i];
-        let key = field.key;
+    const attrs = {};
+
+    for (let i = 0; i < fields.length; ++i) {
+        const field = fields[i];
+        const key = field.key;
 
         if (field.schema._type === 'object') {
-            let Type = new GraphQLObjectType({
+            const Type = new GraphQLObjectType({
                 name  : field.key.charAt(0).toUpperCase() + field.key.slice(1),
                 fields: internals.buildFields(field.schema._inner.children)
             });
@@ -111,7 +118,7 @@ internals.buildFields = (fields) => {
 
         if (field.schema._type === 'array') {
             let Type;
-            let pathToMethod = 'schema._inner.items.0._flags.lazy';
+            const pathToMethod = 'schema._inner.items.0._flags.lazy';
 
             if (Hoek.reach(field, pathToMethod)) {
                 Type = field.schema._inner.items[0]._description;
@@ -120,10 +127,11 @@ internals.buildFields = (fields) => {
                     key,
                     type: field.schema._type
                 });
-            } else {
+            }
+            else {
                 Hoek.assert((field.schema._inner.items.length > 0), 'Need to provide scalar type as an item when using joi array');
 
-                Type = new GraphQLList(typeDictionary[field.schema._inner.items[0]._type]);
+                Type = new GraphQLList(TypeDictionary[field.schema._inner.items[0]._type]);
             }
 
             attrs[key] = {
@@ -134,7 +142,7 @@ internals.buildFields = (fields) => {
         }
 
         if (field.schema._type === 'lazy') {
-            let Type = field.schema._description;
+            const Type = field.schema._description;
 
             lazyLoadQueue.push({
                 key,
@@ -157,7 +165,8 @@ internals.buildFields = (fields) => {
 
     cache = Object.create(null); //Empty cache
 
-    return function(recursiveType) {
+    return function (recursiveType) {
+
         if (recursiveType) {
             return internals.processLazyLoadQueue(attrs, recursiveType);
         }
@@ -167,10 +176,11 @@ internals.buildFields = (fields) => {
 };
 
 internals.buildArgs = (args) => {
-    let argAttrs = {};
 
-    for (let key in args ) {
-        argAttrs[key] = { type: typeDictionary[args[key]._type] };
+    const argAttrs = {};
+
+    for (const key in args ) {
+        argAttrs[key] = { type: TypeDictionary[args[key]._type] };
     }
 
     return argAttrs;
