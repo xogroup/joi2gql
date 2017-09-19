@@ -11,6 +11,7 @@ const {
 const internals = {};
 
 module.exports = (schema) => {
+
     Hoek.assert((schema !== undefined), 'Must provide a schema');
 
     const attrs = {};
@@ -26,15 +27,17 @@ module.exports = (schema) => {
 };
 
 internals.buildFields = (obj) => {
+
     const attrs = {};
 
-    for (let key in obj) {
+    for (const key in obj) {
         if (obj[key].isJoi) {
             attrs[key] = {
                 type   : typeDictionary[obj[key]._type],
                 resolve: obj[key]._meta.find((item) => item.resolve instanceof Function).resolve
             };
-        } else {
+        }
+        else {
             attrs[key] = {
                 type   : obj[key],
                 args   : obj[key]._typeConfig.args,
