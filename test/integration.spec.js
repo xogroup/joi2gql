@@ -39,16 +39,20 @@ const database = {
 };
 
 describe('INTEGRATION', () => {
+
     it('should execute a graphql query given a GraphQL data type', () => {
+
         const query = '{ test(id: 1) { name } }';
         const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema() );
 
         return graphql( graphqlSchema, query ).then((res) => {
+
             res.data.test.name.should.equal('Samuel Joli');
         });
     });
 
     it('should execute a graphql query given a Joi schema', () => {
+
         const graphqlSchema = Vodou.transmuteSchema({
             query: {
                 hello: Joi.string().meta({ resolve: () => 'world' })
@@ -57,11 +61,13 @@ describe('INTEGRATION', () => {
         const query = '{ hello }';
 
         return graphql( graphqlSchema, query ).then((res) => {
+
             res.data.hello.should.equal('world');
         });
     });
 
     it('should execute a graphql query given a complex joi schema', () => {
+
         let schema; // Will be redefined in internals.buildJoiSchema
         const joiSchemaOverride = Joi.object().keys({
             teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg')) //TODO: Since schema is not defined, pull back in setup
@@ -89,6 +95,7 @@ describe('INTEGRATION', () => {
         `;
 
         return graphql( graphqlSchema, query ).then((response) => {
+
             const result = response.data.test;
 
             result.name.should.equal('Motoko Kusanagi'); //String
@@ -104,6 +111,7 @@ describe('INTEGRATION', () => {
 });
 
 internals.buildJoiSchema = (args) => {
+
     let schema = Joi.object().keys({
         name      : Joi.string(),
         age       : Joi.number().integer(),
@@ -124,10 +132,12 @@ internals.buildJoiSchema = (args) => {
 };
 
 internals.buildQuerySchema = (schemaOverride) => {
+
     const config = {
         name   : 'Test',
         args   : { id: Joi.number() },
-        resolve: function(root, args) {
+        resolve: function (root, args) {
+
             return database[args.id];
         }
     };
