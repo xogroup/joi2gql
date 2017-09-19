@@ -6,6 +6,7 @@ const {
 } = require('../helpers');
 
 module.exports = (schema, config) => {
+
     config = config || { name: 'Anon' };
     const typeConstructor = schema.meta(config);
 
