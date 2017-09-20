@@ -2,20 +2,18 @@
 
 Easily convert [Joi](https://github.com/hapijs/joi/) schemas into GraphQL data types.
 
-[![Build Status](https://travis-ci.org/xogroup/joi2ql.svg?branch=master)](https://travis-ci.org/xogroup/joi2ql)
-
 Lead Mainter: [Samuel Joli](https://github.com/Samueljoli)
 
 ## Installation 
 ```Text
-npm install --save joi2ql
+npm install --save joi2gql
 ```
-> graphql-js is listed as a peer dependency. `joi2ql` does not install it's own instance of graphql and instead requires parent module to provide it. This avoids any version collisions.
+> graphql-js is listed as a peer dependency. `joi2gql` does not install it's own instance of graphql and instead requires parent module to provide it. This avoids any version collisions.
 
 ## Example
 ```js
 const Joi    = require('joi');
-const Joi2QL = require('joi2ql');
+const Joi2GQL = require('joi2gql');
 
 const joiSchema = Joi.object().keys({
     key1: Joi.string(),
@@ -27,7 +25,7 @@ const joiSchema = Joi.object().keys({
     })
 });
 
-const GraphQLDataType = Joi2QL.transmuteType(joiSchema);
+const GraphQLDataType = Joi2GQL.transmuteType(joiSchema);
 ```
 
 ## Usage
@@ -40,7 +38,7 @@ const {
 } = require('apollo-server-hapi');
 
 const Joi    = require('joi');
-const Joi2QL = require('joi2ql');
+const Joi2GQL = require('joi2gql');
 
 const port   = '3000';
 const host   = 'localhost';
@@ -68,7 +66,7 @@ const config = {
     }
 };
 
-const Song = Joi2QL.transmuteType(songSchema, config);
+const Song = Joi2GQL.transmuteType(songSchema, config);
 const rootGQLSchema = {
     query: {
         song: Song
@@ -80,7 +78,7 @@ server.register({
     options : {
         path          : '/graphql',
         graphqlOptions: {
-            schema: Joi2QL.transmuteSchema( rootGQLSchema )
+            schema: Joi2GQL.transmuteSchema( rootGQLSchema )
         }
     }
 });
@@ -95,11 +93,11 @@ server.start(() => {
 ```
 
 ## API
-See the detailed [API](https://github.com/xogroup/joi2ql/blob/master/API.md) reference.
+See the detailed [API](https://github.com/xogroup/joi2gql/blob/master/API.md) reference.
 
 ## Contributing
 
-We love community and contributions! Please check out our [guidelines](http://github.com/xogroup/joi2ql/blob/master/.github/CONTRIBUTING.md) before making any PRs.
+We love community and contributions! Please check out our [guidelines](http://github.com/xogroup/joi2gql/blob/master/.github/CONTRIBUTING.md) before making any PRs.
 
 ## Setting up for development
 

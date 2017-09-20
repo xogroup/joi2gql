@@ -1,20 +1,20 @@
 {
-  "name": "joi2ql",
+  "name": "joi2gql",
   "version": "1.1.2",
   "private": false,
   "description": "Plugin",
-  "homepage": "https://github.com/xogroup/joi2ql#readme",
+  "homepage": "https://github.com/xogroup/joi2gql#readme",
   "main": "src/implementation.js",
   "bugs": {
-    "url": "https://github.com/xogroup/joi2ql/issues"
+    "url": "https://github.com/xogroup/joi2gql/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xogroup/joi2ql.git"
+    "url": "git+https://github.com/xogroup/joi2gql.git"
   },
   "keywords": [
     "plugin",
-    "joi2ql",
+    "joi2gql",
     "graphql",
     "joi",
     "schema"

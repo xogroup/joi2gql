@@ -1,6 +1,6 @@
 # 1.1.0 API Reference
   
-## Joi2QL
+## Joi2GQL
 
 ### `transmuteType(schema, [config])`
 Accepts a joi schema and options object defining the name, args and resolver.
@@ -27,7 +27,7 @@ const options = {
   }
 };
 
-const Film = Joi2QL.transmuteType(schema, options);
+const Film = Joi2GQL.transmuteType(schema, options);
 ```
 
 ### `transmuteSchema(schema)`
@@ -35,7 +35,7 @@ Helper method that will create a Root GraphQL schema. Supports: `Query`, `Mutati
 - `schema` - Plain javascript object. Checks for the prescence of either a `query`, `mutation`, or `subscription` key at the parent level. The value needs to be a GraphQL data type.
 
 ```js
-const Film = Joi2QL.transmuteType(schema, config);
+const Film = Joi2GQL.transmuteType(schema, config);
 
 const schema = {
   query: {
@@ -43,7 +43,7 @@ const schema = {
   }
 };
 
-const GraphQLSchema = Joi2QL.transmuteSchema(schema);
+const GraphQLSchema = Joi2GQL.transmuteSchema(schema);
 ```
 
 ## Mappings
@@ -66,18 +66,18 @@ Reference of Joi to GraphQL type mappings.
 - `GraphQLList`
   ```js
   const Joi    = require('joi');
-  const Joi2QL = require('joi2ql');
+  const Joi2GQL = require('joi2gql');
   
   const listSchema = Joi.object().keys({
     a: Joi.array().items(Joi.string())
   });
   
-  const List = Joi2QL.transmuteType( listSchema );
+  const List = Joi2GQL.transmuteType( listSchema );
   ```
 - `GraphQLEnumType`
   ```js
   const Joi    = require('joi');
-  const Joi2QL = require('joi2ql');
+  const Joi2GQL = require('joi2gql');
   
   const scalars = [
     {
@@ -94,5 +94,5 @@ Reference of Joi to GraphQL type mappings.
     a: Joi.any().only(scalars).meta({ name: 'A' })
   });
   
-  const Enum = Joi2QL.transmuteType( enumSchema );
+  const Enum = Joi2GQL.transmuteType( enumSchema );
   ```
