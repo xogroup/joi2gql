@@ -304,18 +304,39 @@ describe('UNIT', () => {
 
     describe('.transmuteSchema()', () => {
 
-        it('successfully create a graphql schema', (done) => {
+        describe('Root Query', () => {
 
-            const config = { name: 'Human' };
-            const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
-            const schema = {
-                query: {
-                    human: Human
-                }
-            };
+            it('successfully create a graphql query schema', (done) => {
 
-            Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
-            done();
+                const config = { name: 'Human' };
+                const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
+                const schema = {
+                    query: {
+                        human: Human
+                    }
+                };
+
+                Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+                done();
+            });
+
+        });
+
+        describe('Root Mutation', () => {
+
+            it('should successfully create a graphql mutation schema', (done) => {
+
+                const config = { name: 'Human' };
+                const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
+                const schema = {
+                    mutation: {
+                        human: Human
+                    }
+                };
+
+                Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+                done();
+            });
         });
 
         it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {

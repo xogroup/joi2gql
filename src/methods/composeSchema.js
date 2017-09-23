@@ -23,6 +23,13 @@ module.exports = (schema) => {
         });
     }
 
+    if (schema.mutation) {
+        attrs.query = new GraphQLObjectType({
+            name: 'Mutation',
+            fields: internals.buildFields(schema.mutation)
+        });
+    }
+
     return new GraphQLSchema( attrs );
 };
 
