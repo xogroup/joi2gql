@@ -241,6 +241,23 @@ describe('UNIT', () => {
             done();
         });
 
+        it('should create a GraphQL data type and support input object type args', (done) => {
+
+            const personInputType = object().keys({
+                a: string()
+            });
+            const config = {
+                name: 'Human',
+                args: { person: personInputType }
+            };
+            const subject = Vodou.transmuteType(internals.buildJoiSchema(), config);
+
+            subject.constructor.should.equal( GraphQLObjectType );
+            subject._typeConfig.args.person.should.exist;
+
+            done();
+        });
+
         it('should construct graphql data type given a recurisve felicity constructor', (done) => {
 
             const typeName = 'Subject';

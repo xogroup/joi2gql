@@ -187,7 +187,7 @@ internals.buildArgs = (args) => {
                     name: key.charAt(0).toUpperCase() + key.slice(1),
                     fields: internals.buildFields(args[key]._inner.children)
                 })
-            }
+            };
         }
         else {
             argAttrs[key] = { type: TypeDictionary[args[key]._type] };
