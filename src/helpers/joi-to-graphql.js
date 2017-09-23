@@ -2,6 +2,7 @@
 
 const {
     GraphQLObjectType,
+    GraphQLInputObjectType,
     GraphQLList
 } = require('graphql');
 const TypeDictionary = require('./type-dictionary');
@@ -180,7 +181,17 @@ internals.buildArgs = (args) => {
     const argAttrs = {};
 
     for (const key in args ) {
-        argAttrs[key] = { type: TypeDictionary[args[key]._type] };
+        if (args[key]._type === 'object') {
+            argAttrs[key] = {
+                type: new GraphQLInputObjectType({
+                    name: key.charAt(0).toUpperCase() + key.slice(1),
+                    fields: internals.buildFields(args[key]._inner.children)
+                })
+            }
+        }
+        else {
+            argAttrs[key] = { type: TypeDictionary[args[key]._type] };
+        }
     }
 
     return argAttrs;
