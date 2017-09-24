@@ -132,7 +132,17 @@ internals.buildFields = (fields) => {
             else {
                 Hoek.assert((field.schema._inner.items.length > 0), 'Need to provide scalar type as an item when using joi array');
 
-                Type = new GraphQLList(TypeDictionary[field.schema._inner.items[0]._type]);
+                if (Hoek.reach(field, 'schema._inner.items.0._type') === 'object') {
+                    const { name } = Hoek.reach(field, 'schema._inner.items.0._meta.0');
+                    const Item = new GraphQLObjectType({
+                        name,
+                        fields: internals.buildFields(field.schema._inner.items[0]._inner.children)
+                    });
+                    Type = new GraphQLList(Item);
+                }
+                else {
+                    Type = new GraphQLList(TypeDictionary[field.schema._inner.items[0]._type]);
+                }
             }
 
             attrs[key] = {
