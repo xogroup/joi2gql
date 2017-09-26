@@ -30,6 +30,13 @@ module.exports = (schema) => {
         });
     }
 
+    if (schema.subscription) {
+        attrs.query = new GraphQLObjectType({
+            name: 'Subscription',
+            fields: internals.buildFields(schema.subscription)
+        });
+    }
+
     return new GraphQLSchema( attrs );
 };
 

@@ -339,6 +339,23 @@ describe('UNIT', () => {
             });
         });
 
+        describe('Root Subscription', () => {
+
+            it('should successfully create a graphql subscription schema', (done) => {
+
+                const config = { name: 'Human' };
+                const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
+                const schema = {
+                    subscription: {
+                        human: Human
+                    }
+                };
+
+                Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+                done();
+            });
+        });
+
         it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {
 
             const config = { name: 'Alien' };
