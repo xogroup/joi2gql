@@ -1,6 +1,7 @@
 ![alt text](http://i68.tinypic.com/xmpd20.png)
 
 [![Build Status](https://travis-ci.org/xogroup/joi2gql.svg?branch=master)](https://travis-ci.org/xogroup/joi2gql)
+[![npm version](https://badge.fury.io/js/joi2gql.svg)](https://badge.fury.io/js/joi2gql)
 
 Easily convert [Joi](https://github.com/hapijs/joi/) schemas into GraphQL data types.
 
