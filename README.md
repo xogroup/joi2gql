@@ -1,4 +1,4 @@
-![alt text](http://i65.tinypic.com/28jwexe.png)
+![alt text](http://i68.tinypic.com/xmpd20.png)
 
 [![Build Status](https://travis-ci.org/xogroup/joi2gql.svg?branch=master)](https://travis-ci.org/xogroup/joi2gql)
 
