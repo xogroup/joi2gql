@@ -16,23 +16,23 @@ const Vodou = require('../src/implementation');
 
 const database = {
     1: {
-        name: 'Samuel Joli'
+        a: 'xo group'
     },
     2: {
-        name      : 'Motoko Kusanagi',
-        age       : 31,
-        cyborgMods: 90.9,
-        occupation: {
-            title: 'Military Officer',
-            level: 'Major'
+        a: 'string',
+        b: 0,
+        c: 0.1,
+        d: {
+            key1: 'string',
+            key2: 'string'
         },
-        active      : true,
-        affiliations: ['Section 9'],
-        teamMembers : [
+        experiment: ['Experiment'],
+        e: true,
+        collection: [
             {
-                name     : 'Saito',
-                age      : 46,
-                cyborgMod: 25.6
+                prop1: 'string',
+                prop2: 46,
+                prop3: 25.6
             }
         ]
     }
@@ -44,12 +44,12 @@ describe('INTEGRATION', () => {
 
         it('should execute a graphql query given a converted schema', () => {
 
-            const query = '{ test(id: 1) { name } }';
+            const query = '{ subject(id: 1) { a } }';
             const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema() );
 
             return graphql( graphqlSchema, query ).then((res) => {
 
-                res.data.test.name.should.equal('Samuel Joli');
+                res.data.subject.a.should.equal('xo group');
             });
         });
 
@@ -78,19 +78,20 @@ describe('INTEGRATION', () => {
             const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema(joiSchemaOverride) );
             const query = `
                 { 
-                    test(id: 2) {
-                        name
-                        age
-                        cyborgMods
-                        occupation { 
-                            title
-                            level 
-                        } 
-                        active 
-                        affiliations
-                        teamMembers {
-                            name
-                            age
+                    subject(id: 2) {
+                        a
+                        b
+                        c
+                        d {
+                            key1
+                            key2
+                        }
+                        e
+                        experiment
+                        collection {
+                            prop1
+                            prop2
+                            prop3
                         }
                     } 
                 }
@@ -98,16 +99,15 @@ describe('INTEGRATION', () => {
 
             return graphql( graphqlSchema, query ).then((response) => {
 
-                const result = response.data.test;
+                const result = response.data.subject;
 
-                result.name.should.equal('Motoko Kusanagi'); //String
-                result.age.should.equal(31); //Int
-                result.cyborgMods.should.equal(90.9); //Float
-                result.occupation.title.should.equal('Military Officer'); //Object
-                result.occupation.level.should.equal('Major');
-                result.active.should.equal(true);
-                result.affiliations.should.deep.equal(['Section 9']); //List
-                result.teamMembers[0].name.should.equal('Saito');
+                result.a.should.equal('string'); //String
+                result.b.should.equal(0); //Int
+                result.c.should.equal(0.1); //Float
+                result.d.key1.should.equal('string'); //Object
+                result.e.should.equal(true);
+                result.experiment.should.deep.equal(['Experiment']);
+                //result.collection.should
             });
         });
     });
@@ -117,31 +117,31 @@ describe('INTEGRATION', () => {
         it('should execute a graphql mutation given a GraphQL data type', () => {
 
             const query = `
-                { 
-                    upsertMember( id: 2, member: { name: "Togusa", age: 27, cyborgMods: 4 }) { 
-                        name
-                        teamMembers {
-                            name
-                            age
-                            cyborgMods
+                {
+                    inject( id: 2, item: { prop1: "string", prop2: 27, prop3: 4 }) {
+                        a
+                        collection {
+                            prop1
+                            prop2
+                            prop3
                         }
                     }
                 }
             `;
             const expected = {
-                name      : 'Togusa',
-                age       : 27,
-                cyborgMods: 4
+                prop1: 'string',
+                prop2: 27,
+                prop3: 4
             };
             const graphqlSchema = Vodou.transmuteSchema( internals.buildMutationSchema() );
 
             return graphql( graphqlSchema, query ).then((res) => {
 
-                const result = res.data.upsertMember.teamMembers[1];
+                const result = res.data.inject.collection[1];
 
-                result.name.should.equal(expected.name);
-                result.age.should.equal(expected.age);
-                result.cyborgMods.should.equal(expected.cyborgMods);
+                result.prop1.should.equal(expected.prop1);
+                result.prop2.should.equal(expected.prop2);
+                result.prop3.should.equal(expected.prop3);
             });
         });
     });
@@ -150,20 +150,20 @@ describe('INTEGRATION', () => {
 internals.buildJoiSchema = (args) => {
 
     let schema = Joi.object().keys({
-        name      : Joi.string(),
-        age       : Joi.number().integer(),
-        cyborgMods: Joi.number(),
-        occupation: Joi.object().keys({
-            title: Joi.string(),
-            level: Joi.string()
+        a: Joi.string(),
+        b: Joi.number().integer(),
+        c: Joi.number(),
+        d: Joi.object().keys({
+            key1: Joi.string(),
+            key2: Joi.string()
         }),
-        active      : Joi.boolean(),
-        affiliations: Joi.array().items(Joi.string()),
-        teamMembers: Joi.array().items(Joi.object().keys({
-            name      : Joi.string(),
-            age       : Joi.number().integer(),
-            cyborgMods: Joi.number()
-        }).meta({ name: 'teamMembers' }))
+        e: Joi.boolean(),
+        experiment: Joi.array().items(Joi.string()),
+        collection: Joi.array().items(Joi.object().keys({
+            prop1: Joi.string(),
+            prop2: Joi.number().integer(),
+            prop3: Joi.number()
+        }).meta({ name: 'collection' }))
     });
 
     if (args) {
@@ -176,17 +176,17 @@ internals.buildJoiSchema = (args) => {
 internals.buildQuerySchema = (schemaOverride) => {
 
     const config = {
-        name   : 'Test',
+        name   : 'Subject',
         args   : { id: Joi.number() },
         resolve: function (root, args) {
 
             return database[args.id];
         }
     };
-    const Test = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
+    const Subject = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
     const schema = {
         query: {
-            test: Test
+            subject: Subject
         }
     };
 
@@ -195,18 +195,18 @@ internals.buildQuerySchema = (schemaOverride) => {
 
 internals.buildMutationSchema = (schemaOverride) => {
 
-    const memberInputType = Joi.object().keys({
-        name      : Joi.string(),
-        age       : Joi.number().integer(),
-        cyborgMods: Joi.number()
+    const dataInjectionType = Joi.object().keys({
+        prop1: Joi.string(),
+        prop2: Joi.number().integer(),
+        prop3: Joi.number()
     });
 
     const config = {
         name   : 'Subject',
-        args   : { id: Joi.number(), member: memberInputType },
+        args   : { id: Joi.number(), item: dataInjectionType },
         resolve: function (root, args) {
 
-            database[args.id].teamMembers.push(args.member);
+            database[args.id].collection.push(args.item);
             return database[args.id];
         }
     };
@@ -214,7 +214,7 @@ internals.buildMutationSchema = (schemaOverride) => {
     const Subject = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
     const schema = {
         mutation: {
-            upsertMember: Subject
+            inject: Subject
         }
     };
 
