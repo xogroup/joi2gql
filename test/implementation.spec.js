@@ -31,7 +31,7 @@ const {
 } = require('../src/helpers');
 
 const internals  = {};
-const Vodou = require('../src/implementation');
+const Joi2GQL = require('../src/implementation');
 
 describe('UNIT', () => {
 
@@ -41,28 +41,28 @@ describe('UNIT', () => {
 
             const joiSchema = string();
 
-            Vodou.transmuteType.bind(null, joiSchema).should.throw('Type needs to be an object');
+            Joi2GQL.transmuteType.bind(null, joiSchema).should.throw('Type needs to be an object');
             done();
         });
 
         it('should create a GraphQL data type given a joi schema', (done) => {
 
             const config = {
-                name: 'Human'
+                name: 'Subject'
             };
 
-            Vodou.transmuteType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
+            Joi2GQL.transmuteType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
             done();
         });
 
         it('should assign name to Anon if one was not given', (done) => {
 
             const joiSchema = object().keys({
-                name: string(),
-                age : number().integer()
+                a: string(),
+                b: number().integer()
             });
 
-            Vodou.transmuteType(joiSchema).name.should.equal('Anon');
+            Joi2GQL.transmuteType(joiSchema).name.should.equal('Anon');
             done();
         });
 
@@ -77,7 +77,7 @@ describe('UNIT', () => {
                 description: desc
             };
 
-            Vodou.transmuteType(joiSchema, config).description.should.equal(desc);
+            Joi2GQL.transmuteType(joiSchema, config).description.should.equal(desc);
             done();
         });
 
@@ -87,7 +87,7 @@ describe('UNIT', () => {
                 a: string()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLString );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLString );
             done();
         });
 
@@ -97,7 +97,7 @@ describe('UNIT', () => {
                 a: string().guid()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLID );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLID );
             done();
         });
 
@@ -107,7 +107,7 @@ describe('UNIT', () => {
                 a: number()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLFloat );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLFloat );
             done();
         });
 
@@ -117,7 +117,7 @@ describe('UNIT', () => {
                 a: number().integer()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLInt );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLInt );
             done();
         });
 
@@ -127,7 +127,7 @@ describe('UNIT', () => {
                 a: boolean()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLBoolean );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLBoolean );
             done();
         });
 
@@ -137,7 +137,7 @@ describe('UNIT', () => {
                 a: array().items(string())
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLList(GraphQLString) );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLList(GraphQLString) );
             done();
         });
 
@@ -147,7 +147,7 @@ describe('UNIT', () => {
                 a: array()
             });
 
-            Vodou.transmuteType.bind(null, joiSchema).should.throw('Need to provide scalar type as an item when using joi array');
+            Joi2GQL.transmuteType.bind(null, joiSchema).should.throw('Need to provide scalar type as an item when using joi array');
             done();
         });
 
@@ -157,7 +157,7 @@ describe('UNIT', () => {
                 a: number().required()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLFloat) );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLFloat) );
             done();
         });
 
@@ -167,7 +167,7 @@ describe('UNIT', () => {
                 a: number().integer().required()
             });
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLInt) );
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLInt) );
             done();
         });
 
@@ -194,7 +194,7 @@ describe('UNIT', () => {
                 }
             };
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
             done();
         });
 
@@ -221,14 +221,14 @@ describe('UNIT', () => {
                 }
             };
 
-            Vodou.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
+            Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
             done();
         });
 
         it('should create a GraphQL data type and correctly set the args', (done) => {
 
             const config = {
-                name: 'Human',
+                name: 'Subject',
                 args: { id: number().integer() }
             };
 
@@ -236,8 +236,8 @@ describe('UNIT', () => {
                 type: typeDictionary.number
             };
 
-            Vodou.transmuteType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
-            Vodou.transmuteType(internals.buildJoiSchema(), config)._typeConfig.args.id.should.deep.equal(expected);
+            Joi2GQL.transmuteType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
+            Joi2GQL.transmuteType(internals.buildJoiSchema(), config)._typeConfig.args.id.should.deep.equal(expected);
             done();
         });
 
@@ -247,10 +247,10 @@ describe('UNIT', () => {
                 a: string()
             });
             const config = {
-                name: 'Human',
+                name: 'Subject',
                 args: { person: personInputType }
             };
-            const subject = Vodou.transmuteType(internals.buildJoiSchema(), config);
+            const subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
 
             subject.constructor.should.equal( GraphQLObjectType );
             subject._typeConfig.args.person.should.exist;
@@ -270,7 +270,7 @@ describe('UNIT', () => {
                 prop3: lazy(() => joiSchema).description(typeName)
             });
 
-            const subject = Vodou.transmuteType(joiSchema, config);
+            const subject = Joi2GQL.transmuteType(joiSchema, config);
 
             (subject._typeConfig.fields instanceof Function).should.be.true;
             subject._typeConfig.fields().prop3.type._typeConfig.name.should.equal(typeName);
@@ -281,23 +281,23 @@ describe('UNIT', () => {
         it('should properly construct a graphql data type given a recursive felicity constructor nested in an array', (done) => { //TODO: Update Api.MD for this use case
 
             const config = {
-                name   : 'Cyborg',
+                name   : 'Subject',
                 args   : { id: number().integer() },
                 resolve: function () {}
             };
             const joiSchema = object().keys({
-                name      : string(),
-                age       : number().integer(),
-                cyborgMods: number(),
-                occupation: object().keys({
-                    title: string(),
-                    level: string()
+                a: string(),
+                b: number().integer(),
+                c: number(),
+                d: object().keys({
+                    prop1: string(),
+                    prop2: string()
                 }),
-                active     : boolean(),
-                teamMembers: array().items(lazy(() => joiSchema).description('Cyborg')) // May not need users to specify
+                e: boolean(),
+                f: array().items(lazy(() => joiSchema).description('Subject')) // May not need users to specify
             });
 
-            Vodou.transmuteType(joiSchema, config).constructor.should.equal( GraphQLObjectType );
+            Joi2GQL.transmuteType(joiSchema, config).constructor.should.equal( GraphQLObjectType );
             done();
         });
     });
@@ -308,15 +308,15 @@ describe('UNIT', () => {
 
             it('successfully create a graphql query schema', (done) => {
 
-                const config = { name: 'Human' };
-                const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
+                const config = { name: 'Subject' };
+                const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
                 const schema = {
                     query: {
-                        human: Human
+                        subject: Subject
                     }
                 };
 
-                Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+                Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
                 done();
             });
 
@@ -326,15 +326,15 @@ describe('UNIT', () => {
 
             it('should successfully create a graphql mutation schema', (done) => {
 
-                const config = { name: 'Human' };
-                const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
+                const config = { name: 'Subject' };
+                const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
                 const schema = {
                     mutation: {
-                        human: Human
+                        subject: Subject
                     }
                 };
 
-                Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+                Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
                 done();
             });
         });
@@ -343,43 +343,43 @@ describe('UNIT', () => {
 
             it('should successfully create a graphql subscription schema', (done) => {
 
-                const config = { name: 'Human' };
-                const Human = Vodou.transmuteType(internals.buildJoiSchema(), config);
+                const config = { name: 'Subject' };
+                const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
                 const schema = {
                     subscription: {
-                        human: Human
+                        subject: Subject
                     }
                 };
 
-                Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+                Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
                 done();
             });
         });
 
         it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {
 
-            const config = { name: 'Alien' };
-            const Saiyan = Vodou.transmuteType(internals.buildJoiSchema(), config);
+            const config = { name: 'Subject' };
+            const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
             const schema = {
                 query: {
-                    human: Saiyan,
+                    subject: Subject,
                     hello: string().meta({ resolve: () => 'world' })
                 }
             };
 
-            Vodou.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
+            Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
             done();
         });
 
         it('should throw when query, mutation, or subscription is not defined', (done) => {
 
-            Vodou.transmuteSchema.bind(null, {}).should.throw();
+            Joi2GQL.transmuteSchema.bind(null, {}).should.throw();
             done();
         });
 
         it('should throw an error when schema is not provided', (done) => {
 
-            Vodou.transmuteSchema.bind(null).should.throw('Must provide a schema');
+            Joi2GQL.transmuteSchema.bind(null).should.throw('Must provide a schema');
             done();
         });
     });
@@ -389,15 +389,15 @@ describe('UNIT', () => {
 internals.buildJoiSchema = () => {
 
     const schema = object().keys({
-        name      : string(),
-        age       : number().integer(),
-        cyborgMods: number(),
-        occupation: object().keys({
-            title: string(),
-            level: string()
+        a: string(),
+        b: number().integer(),
+        c: number(),
+        d: object().keys({
+            prop1: string(),
+            prop2: string()
         }),
-        active      : boolean(),
-        affiliations: array().items(string())
+        e: boolean(),
+        f: array().items(string())
     });
 
     return schema;
