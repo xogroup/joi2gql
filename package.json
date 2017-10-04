@@ -2,7 +2,7 @@
   "name": "joi2gql",
   "version": "1.3.0",
   "private": false,
-  "description": "Plugin",
+  "description": "Conversion of Joi schemas into GraphQL data types",
   "homepage": "https://github.com/xogroup/joi2gql#readme",
   "main": "src/implementation.js",
   "bugs": {
