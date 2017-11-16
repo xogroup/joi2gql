@@ -37,25 +37,23 @@ describe('UNIT', () => {
 
     describe('.transmuteType()', () => {
 
-        it('should error when joi schema is not an object', (done) => {
+        it('should error when joi schema is not an object', async () => {
 
             const joiSchema = string();
 
             Joi2GQL.transmuteType.bind(null, joiSchema).should.throw('Type needs to be an object');
-            done();
         });
 
-        it('should create a GraphQL data type given a joi schema', (done) => {
+        it('should create a GraphQL data type given a joi schema', async () => {
 
             const config = {
                 name: 'Subject'
             };
 
             Joi2GQL.transmuteType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
-            done();
         });
 
-        it('should assign name to Anon if one was not given', (done) => {
+        it('should assign name to Anon if one was not given', async () => {
 
             const joiSchema = object().keys({
                 a: string(),
@@ -63,10 +61,9 @@ describe('UNIT', () => {
             });
 
             Joi2GQL.transmuteType(joiSchema).name.should.equal('Anon');
-            done();
         });
 
-        it('should properly create a GraphQL data type and support descriptions', (done) => {
+        it('should properly create a GraphQL data type and support descriptions', async () => {
 
             const desc = 'Some description';
             const joiSchema = object().keys({
@@ -78,100 +75,90 @@ describe('UNIT', () => {
             };
 
             Joi2GQL.transmuteType(joiSchema, config).description.should.equal(desc);
-            done();
         });
 
-        it('should properly create a GraphQL data type and support string scalar types', (done) => {
+        it('should properly create a GraphQL data type and support string scalar types', async () => {
 
             const joiSchema = object().keys({
                 a: string()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLString );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support id scalar types', (done) => {
+        it('should properly create a GraphQL data type and support id scalar types', async () => {
 
             const joiSchema = object().keys({
                 a: string().guid()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLID );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support float scalar types', (done) => {
+        it('should properly create a GraphQL data type and support float scalar types', async () => {
 
             const joiSchema = object().keys({
                 a: number()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLFloat );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support int scalar types', (done) => {
+        it('should properly create a GraphQL data type and support int scalar types', async () => {
 
             const joiSchema = object().keys({
                 a: number().integer()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLInt );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support boolean scalar types', (done) => {
+        it('should properly create a GraphQL data type and support boolean scalar types', async () => {
 
             const joiSchema = object().keys({
                 a: boolean()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLBoolean );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support list scalar types', (done) => {//TODO: Arrays need items, go down to scalar types! API.MD
+        it('should properly create a GraphQL data type and support list scalar types', async () => {//TODO: Arrays need items, go down to scalar types! API.MD
 
             const joiSchema = object().keys({
                 a: array().items(string())
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLList(GraphQLString) );
-            done();
         });
 
-        it('should error when using array type without specifying a scalar type as an item', (done) => {
+        it('should error when using array type without specifying a scalar type as an item', async () => {
 
             const joiSchema = object().keys({
                 a: array()
             });
 
             Joi2GQL.transmuteType.bind(null, joiSchema).should.throw('Need to provide scalar type as an item when using joi array');
-            done();
         });
 
-        it('should properly create a GraphQL data type and support required fields', (done) => {
+        it('should properly create a GraphQL data type and support required fields', async () => {
 
             const joiSchema = object().keys({
                 a: number().required()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLFloat) );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support complex required fields', (done) => {
+        it('should properly create a GraphQL data type and support complex required fields', async () => {
 
             const joiSchema = object().keys({
                 a: number().integer().required()
             });
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.deep.equal( new GraphQLNonNull(GraphQLInt) );
-            done();
         });
 
-        it('should properly create a GraphQL data type and support enum scalar types', (done) => {
+        it('should properly create a GraphQL data type and support enum scalar types', async () => {
 
             const scalars = [
                 {
@@ -195,10 +182,9 @@ describe('UNIT', () => {
             };
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
-            done();
         });
 
-        it('should properly create a GraphQL data type, support enum scalar types and assign Anon as name if one is not provided', (done) => {
+        it('should properly create a GraphQL data type, support enum scalar types and assign Anon as name if one is not provided', async () => {
 
             const scalars = [
                 {
@@ -222,10 +208,9 @@ describe('UNIT', () => {
             };
 
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type._enumConfig.should.deep.equal(expected);
-            done();
         });
 
-        it('should create a GraphQL data type and correctly set the args', (done) => {
+        it('should create a GraphQL data type and correctly set the args', async () => {
 
             const config = {
                 name: 'Subject',
@@ -238,10 +223,9 @@ describe('UNIT', () => {
 
             Joi2GQL.transmuteType(internals.buildJoiSchema(), config).constructor.should.equal( GraphQLObjectType );
             Joi2GQL.transmuteType(internals.buildJoiSchema(), config)._typeConfig.args.id.should.deep.equal(expected);
-            done();
         });
 
-        it('should create a GraphQL data type and support input object type args', (done) => {
+        it('should create a GraphQL data type and support input object type args', async () => {
 
             const personInputType = object().keys({
                 a: string()
@@ -254,11 +238,9 @@ describe('UNIT', () => {
 
             subject.constructor.should.equal( GraphQLObjectType );
             subject._typeConfig.args.person.should.exist;
-
-            done();
         });
 
-        it('should construct graphql data type given a recurisve felicity constructor', (done) => {
+        it('should construct graphql data type given a recurisve felicity constructor', async () => {
 
             const typeName = 'Subject';
             const config = {
@@ -275,10 +257,9 @@ describe('UNIT', () => {
             (subject._typeConfig.fields instanceof Function).should.be.true;
             subject._typeConfig.fields().prop3.type._typeConfig.name.should.equal(typeName);
             subject.constructor.should.equal( GraphQLObjectType ); //TODO: Drawback of checking just for constructor
-            done();
         });
 
-        it('should properly construct a graphql data type given a recursive felicity constructor nested in an array', (done) => { //TODO: Update Api.MD for this use case
+        it('should properly construct a graphql data type given a recursive felicity constructor nested in an array', async () => { //TODO: Update Api.MD for this use case
 
             const config = {
                 name   : 'Subject',
@@ -298,7 +279,6 @@ describe('UNIT', () => {
             });
 
             Joi2GQL.transmuteType(joiSchema, config).constructor.should.equal( GraphQLObjectType );
-            done();
         });
     });
 
@@ -306,7 +286,7 @@ describe('UNIT', () => {
 
         describe('Root Query', () => {
 
-            it('successfully create a graphql query schema', (done) => {
+            it('successfully create a graphql query schema', async () => {
 
                 const config = { name: 'Subject' };
                 const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
@@ -317,14 +297,13 @@ describe('UNIT', () => {
                 };
 
                 Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
-                done();
             });
 
         });
 
         describe('Root Mutation', () => {
 
-            it('should successfully create a graphql mutation schema', (done) => {
+            it('should successfully create a graphql mutation schema', async () => {
 
                 const config = { name: 'Subject' };
                 const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
@@ -335,13 +314,12 @@ describe('UNIT', () => {
                 };
 
                 Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
-                done();
             });
         });
 
         describe('Root Subscription', () => {
 
-            it('should successfully create a graphql subscription schema', (done) => {
+            it('should successfully create a graphql subscription schema', async () => {
 
                 const config = { name: 'Subject' };
                 const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
@@ -352,11 +330,10 @@ describe('UNIT', () => {
                 };
 
                 Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
-                done();
             });
         });
 
-        it('should successfully create a graphql schema given a joi schema and/or graphql data type', (done) => {
+        it('should successfully create a graphql schema given a joi schema and/or graphql data type', async () => {
 
             const config = { name: 'Subject' };
             const Subject = Joi2GQL.transmuteType(internals.buildJoiSchema(), config);
@@ -368,19 +345,16 @@ describe('UNIT', () => {
             };
 
             Joi2GQL.transmuteSchema( schema ).constructor.should.equal( GraphQLSchema );
-            done();
         });
 
-        it('should throw when query, mutation, or subscription is not defined', (done) => {
+        it('should throw when query, mutation, or subscription is not defined', async () => {
 
             Joi2GQL.transmuteSchema.bind(null, {}).should.throw();
-            done();
         });
 
-        it('should throw an error when schema is not provided', (done) => {
+        it('should throw an error when schema is not provided', async () => {
 
             Joi2GQL.transmuteSchema.bind(null).should.throw('Must provide a schema');
-            done();
         });
     });
 });
