@@ -72,7 +72,7 @@ describe('INTEGRATION', () => {
 
             let schema;
             const joiSchemaOverride = Joi.object().keys({
-                teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg'));
+                teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg'))
             });
 
             const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema(joiSchemaOverride) );
