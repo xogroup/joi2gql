@@ -70,9 +70,9 @@ describe('INTEGRATION', () => {
 
         it('should execute a graphql query given a complex joi schema', () => {
 
-            let schema; // Will be redefined in internals.buildJoiSchema
+            let schema;
             const joiSchemaOverride = Joi.object().keys({
-                teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg')) //TODO: Since schema is not defined, pull back in setup
+                teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg'));
             });
 
             const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema(joiSchemaOverride) );

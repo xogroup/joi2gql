@@ -157,7 +157,7 @@ internals.buildFields = (fields) => {
 
             lazyLoadQueue.push({
                 key,
-                type: 'object' //TODO: Hardcoded assumption
+                type: 'object'
             });
 
             attrs[key] = {
@@ -168,7 +168,7 @@ internals.buildFields = (fields) => {
         }
 
         if (cache[key]) {
-            continue; //TODO: May want to just return the cache, look into tradeoffs
+            continue;
         }
 
         attrs[key] = internals.setType(field.schema);

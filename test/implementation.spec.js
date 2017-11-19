@@ -122,7 +122,7 @@ describe('UNIT', () => {
             Joi2GQL.transmuteType(joiSchema)._typeConfig.fields.a.type.should.equal( GraphQLBoolean );
         });
 
-        it('should properly create a GraphQL data type and support list scalar types', async () => {//TODO: Arrays need items, go down to scalar types! API.MD
+        it('should properly create a GraphQL data type and support list scalar types', async () => {
 
             const joiSchema = object().keys({
                 a: array().items(string())
@@ -256,10 +256,10 @@ describe('UNIT', () => {
 
             (subject._typeConfig.fields instanceof Function).should.be.true;
             subject._typeConfig.fields().prop3.type._typeConfig.name.should.equal(typeName);
-            subject.constructor.should.equal( GraphQLObjectType ); //TODO: Drawback of checking just for constructor
+            subject.constructor.should.equal( GraphQLObjectType );
         });
 
-        it('should properly construct a graphql data type given a recursive felicity constructor nested in an array', async () => { //TODO: Update Api.MD for this use case
+        it('should properly construct a graphql data type given a recursive felicity constructor nested in an array', async () => {
 
             const config = {
                 name   : 'Subject',
