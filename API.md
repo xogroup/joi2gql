@@ -1,8 +1,8 @@
-# 1.3.1 API Reference
+# 2.3.1 API Reference
   
 ## Joi2GQL
 
-### `transmuteType(schema, [config])`
+### `type(schema, [config])`
 Accepts a joi schema and options object defining the name, args and resolver.
 - `schema` - Joi schema. *Will **throw** if schema is not an object type.*
 - `config` - Optional Javascript object detailing:
@@ -30,7 +30,7 @@ const options = {
 const Film = Joi2GQL.transmuteType(schema, options);
 ```
 
-### `transmuteSchema(schema)`
+### `schema(schema)`
 Helper method that will create a Root GraphQL schema. Supports: `Query`, `Mutation`, `Subscription`.
 - `schema` - Plain javascript object. Checks for the prescence of either a `query`, `mutation`, or `subscription` key at the parent level. The value needs to be a GraphQL data type.
 

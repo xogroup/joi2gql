@@ -12,7 +12,7 @@ const {
 const Joi = require('joi');
 
 const internals  = {};
-const Vodou = require('../src/implementation');
+const Joi2GQL = require('../src/implementation');
 
 const database = {
     1: {
@@ -45,7 +45,7 @@ describe('INTEGRATION', () => {
         it('should execute a graphql query given a converted schema', () => {
 
             const query = '{ subject(id: 1) { a } }';
-            const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema() );
+            const graphqlSchema = Joi2GQL.schema( internals.buildQuerySchema() );
 
             return graphql( graphqlSchema, query ).then((res) => {
 
@@ -55,7 +55,7 @@ describe('INTEGRATION', () => {
 
         it('should execute a graphql query when schema is given a Joi schema', () => {
 
-            const graphqlSchema = Vodou.transmuteSchema({
+            const graphqlSchema = Joi2GQL.schema({
                 query: {
                     hello: Joi.string().meta({ resolve: () => 'world' })
                 }
@@ -75,7 +75,7 @@ describe('INTEGRATION', () => {
                 teamMembers: Joi.array().items(Joi.lazy(() => schema).description('Cyborg'))
             });
 
-            const graphqlSchema = Vodou.transmuteSchema( internals.buildQuerySchema(joiSchemaOverride) );
+            const graphqlSchema = Joi2GQL.schema( internals.buildQuerySchema(joiSchemaOverride) );
             const query = `
                 { 
                     subject(id: 2) {
@@ -133,7 +133,7 @@ describe('INTEGRATION', () => {
                 prop2: 27,
                 prop3: 4
             };
-            const graphqlSchema = Vodou.transmuteSchema( internals.buildMutationSchema() );
+            const graphqlSchema = Joi2GQL.schema( internals.buildMutationSchema() );
 
             return graphql( graphqlSchema, query ).then((res) => {
 
@@ -183,7 +183,7 @@ internals.buildQuerySchema = (schemaOverride) => {
             return database[args.id];
         }
     };
-    const Subject = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
+    const Subject = Joi2GQL.type( internals.buildJoiSchema(schemaOverride), config );
     const schema = {
         query: {
             subject: Subject
@@ -211,7 +211,7 @@ internals.buildMutationSchema = (schemaOverride) => {
         }
     };
 
-    const Subject = Vodou.transmuteType( internals.buildJoiSchema(schemaOverride), config );
+    const Subject = Joi2GQL.type( internals.buildJoiSchema(schemaOverride), config );
     const schema = {
         mutation: {
             inject: Subject
