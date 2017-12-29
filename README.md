@@ -114,3 +114,7 @@ npm install && npm test
 
 - `GraphQLInterfaceType`
 - `GraphQLUnionType`
+
+## Notes
+
+Inspired by the [joiql](https://github.com/muraljs/joiql) library
