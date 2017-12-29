@@ -1,4 +1,4 @@
-# 2.3.1 API Reference
+# 2.0.0 API Reference
   
 ## Joi2GQL
 
