@@ -105,7 +105,7 @@ describe('INTEGRATION', () => {
                 result.b.should.equal(0); //Int
                 result.c.should.equal(0.1); //Float
                 result.d.key1.should.equal('string'); //Object
-                result.e.should.equal(true);
+                result.e.should.equal(true); //Boolean
                 result.experiment.should.deep.equal(['Experiment']);
                 //result.collection.should
             });

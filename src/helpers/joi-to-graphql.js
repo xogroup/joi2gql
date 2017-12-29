@@ -19,6 +19,7 @@ module.exports = (constructor) => {
     const compiledFields = internals.buildFields(constructor._inner.children);
 
     if (lazyLoadQueue.length) {
+
         target = new GraphQLObjectType({
             name,
             description,
@@ -31,6 +32,7 @@ module.exports = (constructor) => {
         });
     }
     else {
+
         target = new GraphQLObjectType({
             name,
             description,
@@ -48,6 +50,7 @@ internals.buildEnumFields = (values) => {
     const attrs = {};
 
     for (let i = 0; i < values.length;  ++i) {
+
         attrs[values[i].value] = { value: values[i].derivedFrom };
     }
 
@@ -57,7 +60,9 @@ internals.buildEnumFields = (values) => {
 internals.setType = (schema) => { // Helpful for Int or Float
 
     if (schema._tests.length) {
+
         if (schema._flags.presence) {
+
             return { type: new TypeDictionary.required(TypeDictionary[schema._tests[0].name]) };
         }
 
@@ -65,10 +70,12 @@ internals.setType = (schema) => { // Helpful for Int or Float
     }
 
     if (schema._flags.presence === 'required') {
+
         return { type: new TypeDictionary.required(TypeDictionary[schema._type]) };
     }
 
     if (schema._flags.allowOnly) { // GraphQLEnumType
+
         const name = Hoek.reach(schema, '_meta.0.name') || 'Anon';
 
         const config = {
@@ -85,10 +92,13 @@ internals.setType = (schema) => { // Helpful for Int or Float
 internals.processLazyLoadQueue = (attrs, recursiveType) => {
 
     for (let i = 0; i < lazyLoadQueue.length; ++i) {
+
         if (lazyLoadQueue[i].type === 'object') {
+
             attrs[lazyLoadQueue[i].key] = { type: recursiveType };
         }
         else {
+
             attrs[lazyLoadQueue[i].key] = { type: new TypeDictionary[lazyLoadQueue[i].type](recursiveType) };
         }
     }
@@ -101,10 +111,12 @@ internals.buildFields = (fields) => {
     const attrs = {};
 
     for (let i = 0; i < fields.length; ++i) {
+
         const field = fields[i];
         const key = field.key;
 
         if (field.schema._type === 'object') {
+
             const Type = new GraphQLObjectType({
                 name  : field.key.charAt(0).toUpperCase() + field.key.slice(1),
                 fields: internals.buildFields(field.schema._inner.children)
@@ -118,10 +130,12 @@ internals.buildFields = (fields) => {
         }
 
         if (field.schema._type === 'array') {
+
             let Type;
             const pathToMethod = 'schema._inner.items.0._flags.lazy';
 
             if (Hoek.reach(field, pathToMethod)) {
+
                 Type = field.schema._inner.items[0]._description;
 
                 lazyLoadQueue.push({
@@ -130,9 +144,11 @@ internals.buildFields = (fields) => {
                 });
             }
             else {
+
                 Hoek.assert((field.schema._inner.items.length > 0), 'Need to provide scalar type as an item when using joi array');
 
                 if (Hoek.reach(field, 'schema._inner.items.0._type') === 'object') {
+
                     const { name } = Hoek.reach(field, 'schema._inner.items.0._meta.0');
                     const Item = new GraphQLObjectType({
                         name,
@@ -141,6 +157,7 @@ internals.buildFields = (fields) => {
                     Type = new GraphQLList(Item);
                 }
                 else {
+
                     Type = new GraphQLList(TypeDictionary[field.schema._inner.items[0]._type]);
                 }
             }
@@ -153,6 +170,7 @@ internals.buildFields = (fields) => {
         }
 
         if (field.schema._type === 'lazy') {
+
             const Type = field.schema._description;
 
             lazyLoadQueue.push({
@@ -168,6 +186,7 @@ internals.buildFields = (fields) => {
         }
 
         if (cache[key]) {
+
             continue;
         }
 
@@ -191,7 +210,9 @@ internals.buildArgs = (args) => {
     const argAttrs = {};
 
     for (const key in args ) {
+
         if (args[key]._type === 'object') {
+
             argAttrs[key] = {
                 type: new GraphQLInputObjectType({
                     name: key.charAt(0).toUpperCase() + key.slice(1),
@@ -200,6 +221,7 @@ internals.buildArgs = (args) => {
             };
         }
         else {
+
             argAttrs[key] = { type: TypeDictionary[args[key]._type] };
         }
     }
