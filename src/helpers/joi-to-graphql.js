@@ -16,6 +16,8 @@ module.exports = (constructor) => {
     let target;
     const { name, args, resolve, description } = constructor._meta[0];
 
+    Hoek.assert(Hoek.reach(constructor, '_inner.children.length') > 0, 'Joi object must have at least 1 key');
+
     const compiledFields = internals.buildFields(constructor._inner.children);
 
     if (lazyLoadQueue.length) {

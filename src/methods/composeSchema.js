@@ -5,14 +5,23 @@ const {
     GraphQLSchema
 } = require('graphql');
 const Hoek = require('hoek');
+const Joi = require('joi');
 const {
     typeDictionary
 } = require('../helpers');
 const internals = {};
 
-module.exports = (schema) => {
+internals.inputSchema = Joi.object().keys({
+    query       : Joi.object(),
+    mutation    : Joi.object(),
+    subscription: Joi.object()
+});
 
-    Hoek.assert((schema !== undefined), 'Must provide a schema');
+module.exports = (schema = {}) => {
+
+    schema = Joi.attempt(schema, internals.inputSchema);
+
+    Hoek.assert(Object.keys(schema).length > 0, 'Must provide a schema');
 
     const attrs = {};
 

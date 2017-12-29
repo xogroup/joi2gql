@@ -3,7 +3,7 @@
 const Lab = require('lab');
 const { script, assertions } = Lab;
 const lab = exports.lab = script();
-const { describe, it } = lab;
+const { describe, it, expect } = lab;
 assertions.should();
 
 const {
@@ -37,11 +37,47 @@ describe('UNIT', () => {
 
     describe('.transmuteType()', () => {
 
-        it('should error when joi schema is not an object', async () => {
+        it('should error when joi schema is not provided', async () => {
+
+            const subject = () => {
+
+                Joi2GQL.transmuteType();
+            };
+
+            expect(subject).to.throw(Error, 'schema argument must be defined');
+        });
+
+        it('should throw when joi schema is not of Joi type object', async () => {
 
             const joiSchema = string();
+            const subject = () => {
 
-            Joi2GQL.transmuteType.bind(null, joiSchema).should.throw('Type needs to be an object');
+                Joi2GQL.transmuteType(joiSchema);
+            };
+
+            expect(subject).to.throw(Error, 'schema must be a Joi Object type');
+        });
+
+        it('should throw when passed an invalid config', async () => {
+
+            const joiSchema = object();
+            const subject = () => {
+
+                Joi2GQL.transmuteType(joiSchema, true);
+            };
+
+            expect(subject).to.throw(Error, '"value" must be an object');
+        });
+
+        it('should throw when passed a Joi object without keys', async () => {
+
+            const joiSchema = object();
+            const subject = () => {
+
+                Joi2GQL.transmuteType(joiSchema, {});
+            };
+
+            expect(subject).to.throw(Error ,'Joi object must have at least 1 key');
         });
 
         it('should create a GraphQL data type given a joi schema', async () => {
@@ -136,8 +172,12 @@ describe('UNIT', () => {
             const joiSchema = object().keys({
                 a: array()
             });
+            const subject = () => {
 
-            Joi2GQL.transmuteType.bind(null, joiSchema).should.throw('Need to provide scalar type as an item when using joi array');
+                Joi2GQL.transmuteType(joiSchema);
+            };
+
+            expect(subject).to.throw(Error, 'Need to provide scalar type as an item when using joi array');
         });
 
         it('should properly create a GraphQL data type and support required fields', async () => {
@@ -349,12 +389,52 @@ describe('UNIT', () => {
 
         it('should throw when query, mutation, or subscription is not defined', async () => {
 
-            Joi2GQL.transmuteSchema.bind(null, {}).should.throw();
+            const subject = () => {
+
+                Joi2GQL.transmuteSchema({});
+            };
+
+            expect(subject).to.throw(Error, 'Must provide a schema');
         });
 
         it('should throw an error when schema is not provided', async () => {
 
-            Joi2GQL.transmuteSchema.bind(null).should.throw('Must provide a schema');
+            const subject = () => {
+
+                Joi2GQL.transmuteSchema();
+            };
+
+            expect(subject).to.throw(Error, 'Must provide a schema');
+        });
+
+        it('throws when passed an invalid query options', async () => {
+
+            const subject = () => {
+
+                Joi2GQL.transmuteSchema({ query: true });
+            };
+
+            expect(subject).to.throw(Error, '"query\" must be an object');
+        });
+
+        it('throws when passed an invalid mutation options', async () => {
+
+            const subject = () => {
+
+                Joi2GQL.transmuteSchema({ mutation: true });
+            };
+
+            expect(subject).to.throw(Error, '"mutation\" must be an object');
+        });
+
+        it('throws when passed an invalid subscription options', async () => {
+
+            const subject = () => {
+
+                Joi2GQL.transmuteSchema({ subscription: true });
+            };
+
+            expect(subject).to.throw(Error, '"subscription\" must be an object');
         });
     });
 });
