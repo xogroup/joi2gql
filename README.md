@@ -28,7 +28,7 @@ const joiSchema = Joi.object().keys({
     })
 });
 
-const GraphQLDataType = Joi2GQL.transmuteType(joiSchema);
+const GraphQLDataType = Joi2GQL.type(joiSchema);
 ```
 
 ## Usage
@@ -69,7 +69,7 @@ const config = {
     }
 };
 
-const Song = Joi2GQL.transmuteType(songSchema, config);
+const Song = Joi2GQL.type(songSchema, config);
 const rootGQLSchema = {
     query: {
         song: Song
@@ -81,7 +81,7 @@ server.register({
     options : {
         path          : '/graphql',
         graphqlOptions: {
-            schema: Joi2GQL.transmuteSchema( rootGQLSchema )
+            schema: Joi2GQL.schema( rootGQLSchema )
         }
     }
 });
